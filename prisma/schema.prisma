@@ -1,0 +1,313 @@
+// prisma/schema.prisma
+// WasteIQ — Full Database Schema
+// AI-Powered Smart Waste Management Platform for Mira-Bhayandar
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ── AUTHENTICATION ────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String?   @unique
+  phone        String?   @unique
+  name         String
+  passwordHash String?
+  role         UserRole  @default(CITIZEN)
+  avatar       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  driver       Driver?
+  citizen      Citizen?
+  sessions     Session[]
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  DRIVER
+  CITIZEN
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ── BINS ──────────────────────────────────────────────────────────
+
+model Bin {
+  id              String         @id @default(cuid())
+  qrCode          String         @unique
+  latitude        Float
+  longitude       Float
+  address         String
+  zoneId          String
+  zone            Zone           @relation(fields: [zoneId], references: [id])
+  capacity        Float          @default(100)
+  currentFill     Float          @default(0)
+  lastCollectedAt DateTime?
+  sensorHealth    Boolean        @default(true)
+  priorityScore   Float          @default(0)
+  status          BinStatus      @default(NORMAL)
+  type            WasteType      @default(MIXED)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  telemetryLogs   BinTelemetry[]
+  scanLogs        ScanLog[]
+  routeStops      RouteStop[]
+  complaints      Complaint[]
+
+  @@index([zoneId])
+  @@index([status])
+  @@index([priorityScore(sort: Desc)])
+}
+
+enum BinStatus {
+  NORMAL
+  WARNING
+  CRITICAL
+  OVERFLOW
+  OFFLINE
+  MAINTENANCE
+}
+
+enum WasteType {
+  MIXED
+  WET
+  DRY
+  HAZARDOUS
+  RECYCLABLE
+}
+
+model BinTelemetry {
+  id           String   @id @default(cuid())
+  binId        String
+  fillLevel    Float
+  weight       Float?
+  temperature  Float?
+  humidity     Float?
+  batteryLevel Float?
+  timestamp    DateTime @default(now())
+  bin          Bin      @relation(fields: [binId], references: [id], onDelete: Cascade)
+
+  @@index([binId, timestamp])
+}
+
+model ScanLog {
+  id        String     @id @default(cuid())
+  binId     String
+  driverId  String
+  action    ScanAction
+  timestamp DateTime   @default(now())
+  latitude  Float?
+  longitude Float?
+  bin       Bin        @relation(fields: [binId], references: [id], onDelete: Cascade)
+  driver    Driver     @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([binId, timestamp])
+  @@index([driverId, timestamp])
+}
+
+enum ScanAction {
+  PICKUP_START
+  PICKUP_COMPLETE
+  INSPECTION
+  MAINTENANCE_REPORT
+}
+
+// ── ZONES ─────────────────────────────────────────────────────────
+
+model Zone {
+  id             String   @id @default(cuid())
+  name           String
+  type           ZoneType
+  locationWeight Float    @default(1.0)
+  geoJson        Json?
+  createdAt      DateTime @default(now())
+  bins           Bin[]
+  routes         Route[]
+}
+
+enum ZoneType {
+  RESIDENTIAL
+  COMMERCIAL
+  HOSPITAL
+  MARKET
+  COASTAL
+  SCHOOL
+  INDUSTRIAL
+}
+
+// ── DRIVERS ───────────────────────────────────────────────────────
+
+model Driver {
+  id              String              @id @default(cuid())
+  userId          String              @unique
+  employeeId      String              @unique
+  vehicleNumber   String
+  vehicleCapacity Float               @default(5000)
+  isActive        Boolean             @default(true)
+  currentLat      Float?
+  currentLng      Float?
+  lastLocationAt  DateTime?
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scanLogs        ScanLog[]
+  routes          Route[]
+  performanceLogs DriverPerformance[]
+}
+
+model DriverPerformance {
+  id             String   @id @default(cuid())
+  driverId       String
+  date           DateTime @db.Date
+  binsCollected  Int      @default(0)
+  routeAdherence Float?
+  avgTimePerBin  Float?
+  idleTime       Float?
+  totalDistance   Float?
+  driver         Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@unique([driverId, date])
+}
+
+// ── ROUTES ────────────────────────────────────────────────────────
+
+model Route {
+  id            String      @id @default(cuid())
+  driverId      String
+  zoneId        String?
+  date          DateTime    @db.Date
+  status        RouteStatus @default(PENDING)
+  totalDistance  Float?
+  estimatedTime Float?
+  actualTime    Float?
+  startedAt     DateTime?
+  completedAt   DateTime?
+  isEmergency   Boolean     @default(false)
+  driver        Driver      @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  zone          Zone?       @relation(fields: [zoneId], references: [id])
+  stops         RouteStop[]
+
+  @@index([driverId, date])
+  @@index([status])
+}
+
+enum RouteStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  EMERGENCY
+}
+
+model RouteStop {
+  id          String     @id @default(cuid())
+  routeId     String
+  binId       String
+  sequence    Int
+  status      StopStatus @default(PENDING)
+  arrivedAt   DateTime?
+  completedAt DateTime?
+  route       Route      @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  bin         Bin        @relation(fields: [binId], references: [id], onDelete: Cascade)
+
+  @@index([routeId, sequence])
+}
+
+enum StopStatus {
+  PENDING
+  SKIPPED
+  COMPLETED
+}
+
+// ── COMPLAINTS ────────────────────────────────────────────────────
+
+model Complaint {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String?
+  latitude    Float?
+  longitude   Float?
+  status      ComplaintStatus @default(OPEN)
+  priority    Int             @default(2)
+  citizenId   String?
+  binId       String?
+  assignedTo  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  citizen     Citizen?        @relation(fields: [citizenId], references: [id])
+  bin         Bin?            @relation(fields: [binId], references: [id])
+
+  @@index([status])
+  @@index([citizenId])
+  @@index([createdAt(sort: Desc)])
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  ESCALATED
+}
+
+// ── CITIZENS ─────────────────────────────────────────────────────
+
+model Citizen {
+  id         String       @id @default(cuid())
+  userId     String       @unique
+  ward       String?
+  points     Int          @default(0)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  complaints Complaint[]
+  ratings    AreaRating[]
+}
+
+model AreaRating {
+  id        String   @id @default(cuid())
+  citizenId String
+  zone      String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  citizen   Citizen  @relation(fields: [citizenId], references: [id], onDelete: Cascade)
+
+  @@index([zone])
+}
+
+// ── ALERTS ────────────────────────────────────────────────────────
+
+model Alert {
+  id         String    @id @default(cuid())
+  type       AlertType
+  message    String
+  binId      String?
+  zoneId     String?
+  severity   Int       @default(2)
+  isResolved Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  @@index([isResolved, createdAt(sort: Desc)])
+  @@index([type])
+}
+
+enum AlertType {
+  OVERFLOW
+  CRITICAL_FILL
+  SENSOR_OFFLINE
+  ROUTE_DELAY
+  EMERGENCY
+  WEATHER
+}
