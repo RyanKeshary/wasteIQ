@@ -7,6 +7,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+const LiveMap = dynamic(() => import('@/components/admin/LiveMap'), { ssr: false });
 import { motion } from 'framer-motion';
 import {
   Trash2,
@@ -209,48 +212,10 @@ export default function AdminDashboard() {
           style={{ minHeight: '400px' }}
         >
           <div
-            className="w-full h-full relative flex items-center justify-center"
-            style={{
-              background: 'var(--surface-low)',
-              minHeight: '400px',
-            }}
+            className="w-full h-full relative"
+            style={{ minHeight: '400px' }}
           >
-            {/* Grid overlay */}
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{
-                backgroundImage: `
-                  linear-gradient(var(--outline-variant) 1px, transparent 1px),
-                  linear-gradient(90deg, var(--outline-variant) 1px, transparent 1px)
-                `,
-                backgroundSize: '32px 32px',
-              }}
-              aria-hidden="true"
-            />
-            {/* Pulsing markers */}
-            <div
-              className="absolute animate-pulse"
-              style={{ top: '35%', left: '25%', width: 14, height: 14, borderRadius: '50%', background: 'var(--primary-container)', boxShadow: '0 0 16px rgba(0,193,106,0.5)' }}
-            />
-            <div
-              className="absolute animate-pulse"
-              style={{ top: '55%', left: '60%', width: 14, height: 14, borderRadius: '50%', background: 'var(--primary-container)', boxShadow: '0 0 16px rgba(0,193,106,0.5)' }}
-            />
-            <div
-              className="absolute animate-pulse-ring"
-              style={{ top: '40%', left: '70%', width: 14, height: 14, borderRadius: '50%', background: 'var(--error)', boxShadow: '0 0 16px rgba(186,26,26,0.5)' }}
-            />
-            <div
-              className="absolute animate-pulse"
-              style={{ top: '70%', left: '40%', width: 14, height: 14, borderRadius: '50%', background: '#FF8842', boxShadow: '0 0 16px rgba(255,136,66,0.5)' }}
-            />
-
-            <div
-              className="glass px-5 py-3 rounded-full text-sm font-medium z-10"
-              style={{ color: 'var(--on-surface-variant)' }}
-            >
-              🗺️ Leaflet map with live bin markers — loads with CartoDB Positron tiles
-            </div>
+            <LiveMap />
           </div>
         </motion.div>
 
