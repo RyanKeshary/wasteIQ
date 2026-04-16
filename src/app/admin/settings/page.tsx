@@ -13,7 +13,7 @@ interface SettingItem {
   id: string;
   label: string;
   description: string;
-  icon: React.ElementType;
+  icon: any;
   enabled: boolean;
 }
 

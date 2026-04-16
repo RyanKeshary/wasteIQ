@@ -5,10 +5,10 @@
  */
 'use client';
 
-import { useEffect, useRef } from 'react';
-
+import { useEffect, useRef, useState } from 'react';
 export default function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
 
   useEffect(() => {
     // Disable on touch devices
@@ -23,11 +23,21 @@ export default function CursorTrail() {
     let animReq: number;
     let mouse = { x: 0, y: 0 };
 
-    // 7 trailing points (main + 6 ghosts)
-    const trail = Array.from({ length: 7 }, () => ({ x: 0, y: 0 }));
-    const sizes = [40, 28, 20, 14, 10, 6, 4];
-    const opacities = [0.08, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01];
-    const lerpFactors = [0.12, 0.10, 0.08, 0.06, 0.05, 0.04, 0.03];
+    // Multi-point trail for a smoother, overlapping look
+    const trail = Array.from({ length: 6 }, () => ({ x: 0, y: 0 }));
+    const sizes = [120, 90, 70, 50, 30, 20];
+    const opacities = [0.08, 0.06, 0.04, 0.03, 0.02, 0.01];
+    const lerpFactors = [0.12, 0.08, 0.06, 0.05, 0.04, 0.03];
+    
+    // Vibrant alternating colors for the neon trail
+    const colors = [
+      '0, 193, 106', // Primary green
+      '57, 184, 253', // Blue
+      '255, 136, 66', // Orange
+      '0, 193, 106',
+      '57, 184, 253',
+      '0, 193, 106'
+    ];
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -41,20 +51,22 @@ export default function CursorTrail() {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < trail.length; i++) {
+      
+      for (let i = trail.length - 1; i >= 0; i--) {
         const target = i === 0 ? mouse : trail[i - 1];
         trail[i].x += (target.x - trail[i].x) * lerpFactors[i];
         trail[i].y += (target.y - trail[i].y) * lerpFactors[i];
 
         ctx.beginPath();
         ctx.arc(trail[i].x, trail[i].y, sizes[i] / 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 193, 106, ${opacities[i]})`;
-        ctx.filter = `blur(${Math.max(10, 20 - i * 3)}px)`;
+        
+        const colorBase = colors[i % colors.length];
+        ctx.fillStyle = `rgba(${colorBase}, ${opacities[i]})`;
+        
+        ctx.filter = `blur(${Math.max(4, 20 - i * 3)}px)`;
         ctx.fill();
       }
 
-      ctx.filter = 'none';
       animReq = requestAnimationFrame(draw);
     };
 

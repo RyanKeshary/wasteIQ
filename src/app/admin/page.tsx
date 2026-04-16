@@ -10,7 +10,17 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 const LiveMap = dynamic(() => import('@/components/admin/LiveMap'), { ssr: false });
-import { motion } from 'framer-motion';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Cell 
+} from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trash2,
   AlertTriangle,
@@ -127,6 +137,11 @@ const mockInsights = [
     severity: 'low' as const,
   },
 ];
+
+const mockChartData = Array.from({ length: 24 }).map((_, i) => ({
+  time: `${i}:00`,
+  level: Math.floor(30 + Math.random() * 60),
+}));
 
 const severityColors = {
   high: { bg: 'var(--error-container)', text: 'var(--error)' },
@@ -305,30 +320,51 @@ export default function AdminDashboard() {
               Last updated: 14:32 IST
             </span>
           </div>
-          {/* Chart placeholder */}
-          <div
-            className="w-full rounded-xl flex items-end gap-1 px-4 pb-4 pt-8"
-            style={{ height: '200px', background: 'var(--surface-low)' }}
-          >
-            {Array.from({ length: 24 }).map((_, i) => {
-              const h = 30 + Math.random() * 50;
-              return (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-md transition-all"
-                  style={{
-                    height: `${h}%`,
-                    background:
-                      h > 70
-                        ? 'var(--tertiary-container)'
-                        : h > 50
-                          ? 'var(--primary-container)'
-                          : 'var(--primary)',
-                    opacity: 0.7 + (i / 24) * 0.3,
+          <div className="h-[250px] w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={mockChartData}>
+                <defs>
+                  <linearGradient id="colorFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                  </linearGradient>
+                </defs>
+                <XAxis 
+                  dataKey="time" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 10, fill: 'var(--outline)' }}
+                />
+                <Bar 
+                  dataKey="level" 
+                  radius={[4, 4, 0, 0]} 
+                  animationDuration={1500}
+                >
+                  {mockChartData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.level > 80 ? 'var(--tertiary)' : 'url(#colorFill)'} 
+                    />
+                  ))}
+                </Bar>
+                <Tooltip 
+                  cursor={{ fill: 'var(--surface-high)', opacity: 0.4 }}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="card bg-white/90 backdrop-blur p-2 shadow-xl border-none">
+                          <p className="mono-sm text-[10px] text-outline mb-1">{payload[0].payload.time}</p>
+                          <p className="title-sm" style={{ color: payload[0].payload.level > 80 ? 'var(--error)' : 'var(--primary)' }}>
+                            {payload[0].value}% Fill
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
-              );
-            })}
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </motion.div>
 

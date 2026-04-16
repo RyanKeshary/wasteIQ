@@ -8,6 +8,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Navigation, ArrowUpDown } from 'lucide-react';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+
+const LiveMap = dynamic(() => import('@/components/admin/LiveMap'), {
+  ssr: false,
+});
 
 interface NearbyBin {
   id: string;
@@ -83,42 +88,9 @@ export default function CitizenBinsPage() {
         </button>
       </div>
 
-      {/* Map Placeholder */}
-      <div className="card p-0 overflow-hidden mb-6" style={{ height: '250px' }}>
-        <div
-          className="w-full h-full relative flex items-center justify-center"
-          style={{ background: 'var(--surface-low)' }}
-        >
-          <div
-            className="absolute inset-0 opacity-15"
-            style={{
-              backgroundImage: `
-                linear-gradient(var(--outline-variant) 1px, transparent 1px),
-                linear-gradient(90deg, var(--outline-variant) 1px, transparent 1px)
-              `,
-              backgroundSize: '28px 28px',
-            }}
-          />
-          {nearbyBins.map((bin, i) => (
-            <button
-              key={bin.id}
-              className="absolute w-4 h-4 rounded-full animate-pulse"
-              style={{
-                top: `${25 + Math.random() * 50}%`,
-                left: `${10 + i * 18}%`,
-                background: getFillColor(bin.fillLevel),
-                boxShadow: `0 0 8px ${getFillColor(bin.fillLevel)}50`,
-                border: 'none',
-                cursor: 'pointer',
-              }}
-              onClick={() => navigateToBin(bin)}
-              title={`${bin.qrCode} — ${bin.fillLevel}%`}
-            />
-          ))}
-          <div className="glass px-4 py-2 rounded-full text-xs font-medium z-10" style={{ color: 'var(--on-surface-variant)' }}>
-            📍 Tap dots to navigate — bins by {sortMode}
-          </div>
-        </div>
+      {/* Map Interactive View */}
+      <div className="card p-0 overflow-hidden mb-6 relative z-0" style={{ height: '350px' }}>
+        <LiveMap />
       </div>
 
       {/* Bin List */}

@@ -4,7 +4,20 @@
  */
 'use client';
 
-import { motion } from 'framer-motion';
+import { 
+  BarChart, 
+  Bar, 
+  AreaChart, 
+  Area, 
+  PieChart, 
+  Pie, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Cell 
+} from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   BarChart3,
   TrendingUp,
@@ -12,8 +25,26 @@ import {
   Recycle,
   Gauge,
   ArrowUpRight,
+  Info
 } from 'lucide-react';
 import CountUp from '@/components/effects/CountUp';
+
+const trendData = [
+  { name: 'Mon', tons: 45 },
+  { name: 'Tue', tons: 52 },
+  { name: 'Wed', tons: 48 },
+  { name: 'Thu', tons: 61 },
+  { name: 'Fri', tons: 55 },
+  { name: 'Sat', tons: 67 },
+  { name: 'Sun', tons: 40 },
+];
+
+const compositionData = [
+  { name: 'Organic', value: 42, color: 'var(--primary)' },
+  { name: 'Recyclable', value: 28, color: 'var(--secondary)' },
+  { name: 'Mixed', value: 18, color: 'var(--tertiary)' },
+  { name: 'Hazardous', value: 12, color: 'var(--error)' },
+];
 
 export default function AdminAnalyticsPage() {
   return (
@@ -77,52 +108,75 @@ export default function AdminAnalyticsPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="card p-6">
-          <h3 className="title-md mb-4">Weekly Collection Trend</h3>
-          <div className="flex items-end gap-2 h-48 px-4 pb-4" style={{ background: 'var(--surface-low)', borderRadius: 'var(--radius-lg)' }}>
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
-              const heights = [65, 78, 72, 85, 92, 70, 55];
-              return (
-                <div key={day} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full rounded-t-md transition-all"
-                    style={{
-                      height: `${heights[i]}%`,
-                      background: `linear-gradient(to top, var(--primary), var(--primary-container))`,
-                      opacity: 0.6 + (i / 7) * 0.4,
-                    }}
-                  />
-                  <span className="text-[9px] font-bold" style={{ color: 'var(--outline)' }}>{day}</span>
-                </div>
-              );
-            })}
+        <div className="card p-6 min-h-[350px]">
+          <h3 className="title-md mb-6">Weekly Collection Flux</h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trendData}>
+                <defs>
+                  <linearGradient id="fluxGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'var(--outline)' }} />
+                <Tooltip 
+                  contentStyle={{ background: 'var(--surface-lowest)', borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow-lg)' }}
+                  itemStyle={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--primary)' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="tons" 
+                  stroke="var(--primary)" 
+                  strokeWidth={3}
+                  fillOpacity={1} 
+                  fill="url(#fluxGradient)" 
+                  animationDuration={2000}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="card p-6">
-          <h3 className="title-md mb-4">Waste Composition</h3>
-          <div className="flex items-center gap-8 h-48">
-            {/* Horizontal stacked bar */}
-            <div className="flex-1 flex flex-col gap-3">
-              {[
-                { label: 'Organic', pct: 42, color: 'var(--primary)' },
-                { label: 'Recyclable', pct: 28, color: 'var(--secondary)' },
-                { label: 'Mixed', pct: 18, color: 'var(--tertiary)' },
-                { label: 'Hazardous', pct: 12, color: 'var(--error)' },
-              ].map((cat) => (
-                <div key={cat.label}>
-                  <div className="flex justify-between mb-1">
-                    <span className="body-sm">{cat.label}</span>
-                    <span className="mono-sm font-bold">{cat.pct}%</span>
-                  </div>
-                  <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: 'var(--surface-high)' }}>
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${cat.pct}%`, background: cat.color }}
-                    />
-                  </div>
-                </div>
-              ))}
+        <div className="card p-6 min-h-[350px]">
+          <h3 className="title-md mb-6">Volume Composition</h3>
+          <div className="h-64 w-full flex items-center">
+            <ResponsiveContainer width="60%" height="100%">
+              <PieChart>
+                <Pie
+                  data={compositionData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  animationDuration={1500}
+                >
+                  {compositionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex-1 flex flex-col gap-3 ml-4">
+               {compositionData.map((cat) => (
+                 <div key={cat.name} className="flex flex-col">
+                    <div className="flex justify-between items-center mb-1">
+                       <span className="text-[10px] font-bold uppercase opacity-60">{cat.name}</span>
+                       <span className="text-xs font-bold">{cat.value}%</span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-surface-low overflow-hidden">
+                       <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${cat.value}%` }}
+                          className="h-full rounded-full" 
+                          style={{ background: cat.color }} 
+                       />
+                    </div>
+                 </div>
+               ))}
             </div>
           </div>
         </div>

@@ -8,9 +8,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Recycle,
   LayoutDashboard,
   Trash2,
   Route,
@@ -31,6 +30,8 @@ import {
   Zap,
 } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
+import HelpGuide from '@/components/admin/HelpGuide';
+import { toast } from 'sonner';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
@@ -46,41 +47,55 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  
   const { emergencyMode, sidebarCollapsed, toggleSidebar, toggleEmergencyMode } = useAdminStore();
 
   const sidebarWidth = sidebarCollapsed ? 72 : 240;
+  const isSearchPage = pathname === '/admin' || pathname === '/admin/bins' || pathname === '/admin/drivers';
 
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--surface)' }}>
       {/* ── SIDEBAR ──────────────────────────────────── */}
-      <aside
-        className="fixed left-0 top-0 h-screen z-40 flex flex-col transition-all duration-300"
+      <motion.aside
+        initial={false}
+        animate={{ width: sidebarCollapsed ? 72 : 240 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="fixed left-0 top-0 h-screen z-40 flex flex-col"
         style={{
-          width: sidebarWidth,
           background: 'var(--surface-lowest)',
           boxShadow: 'var(--shadow-md)',
           overflow: 'hidden',
         }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2 px-4 py-5 min-h-[64px]">
-          <Recycle size={24} style={{ color: 'var(--primary)' }} strokeWidth={2.5} />
-          {!sidebarCollapsed && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-lg font-bold"
-              style={{
-                fontFamily: 'var(--font-display)',
-                color: 'var(--primary)',
-                letterSpacing: '-0.03em',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              WasteIQ
-            </motion.span>
-          )}
-        </div>
+        <Link href="/" className="flex items-center gap-2 px-4 py-3 min-h-[64px] no-underline group">
+          <img 
+            src="/logo.png" 
+            alt="WasteIQ" 
+            className="w-16 h-16 flex-shrink-0 object-contain group-hover:scale-110 transition-transform" 
+          />
+          <AnimatePresence mode="wait">
+            {!sidebarCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="text-lg font-bold"
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  color: 'var(--primary)',
+                  letterSpacing: '-0.03em',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                WasteIQ
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </Link>
 
         {/* Nav Items */}
         <nav className="flex-1 py-2 flex flex-col gap-1 px-3 overflow-y-auto">
@@ -110,16 +125,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   />
                 )}
                 <Icon size={20} className="relative z-10 transition-transform group-hover:scale-110" />
-                {!sidebarCollapsed && (
-                  <motion.span
-                    className="relative z-10 whitespace-nowrap"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
+                <AnimatePresence mode="wait">
+                  {!sidebarCollapsed && (
+                    <motion.span
+                      className="relative z-10 whitespace-nowrap"
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -5 }}
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </Link>
             );
           })}
@@ -156,7 +173,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Collapse Toggle */}
         <button
           onClick={toggleSidebar}
-          className="flex items-center justify-center py-3 transition-colors"
+          className="flex items-center justify-center py-3 transition-colors hover:bg-surface-high"
           style={{
             background: 'var(--surface-low)',
             border: 'none',
@@ -165,14 +182,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           }}
           aria-label="Toggle sidebar"
         >
-          {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          <motion.div
+             animate={{ rotate: sidebarCollapsed ? 0 : 180 }}
+             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+             <ChevronRight size={18} />
+          </motion.div>
         </button>
-      </aside>
+      </motion.aside>
 
       {/* ── MAIN AREA ────────────────────────────────── */}
-      <div
-        className="flex-1 flex flex-col min-h-screen transition-all duration-300"
-        style={{ marginLeft: sidebarWidth }}
+      <motion.div
+        initial={false}
+        animate={{ marginLeft: sidebarCollapsed ? 72 : 240 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="flex-1 flex flex-col min-h-screen"
       >
         {/* Top Bar */}
         <header
@@ -200,67 +224,151 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Search */}
-          <div className="hidden md:flex items-center gap-2 flex-1 max-w-[400px] mx-8">
-            <div className="relative w-full">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2"
-                style={{ color: 'var(--outline)' }}
-              />
-              <input
-                type="text"
-                className="input-field pl-10"
-                placeholder="Search bins, drivers, alerts..."
-                style={{ height: '40px', fontSize: '13px' }}
-              />
-            </div>
+          <div className="flex-1 flex justify-center mx-4">
+            <AnimatePresence>
+              {isSearchPage && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="hidden md:flex items-center gap-2 w-full max-w-[400px]"
+                >
+                  <div className="relative w-full">
+                    <Search
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2"
+                      style={{ color: 'var(--outline)' }}
+                    />
+                    <input
+                      type="text"
+                      className="input-field pl-10"
+                      placeholder="Search bins, drivers, alerts..."
+                      style={{ height: '40px', fontSize: '13px' }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Right cluster */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             <span
               className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
               style={{
-                background: 'var(--success-container)',
+                background: emergencyMode ? 'var(--error-container)' : 'var(--success-container)',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '10px',
                 fontWeight: 500,
-                color: 'var(--primary)',
+                color: emergencyMode ? 'var(--error)' : 'var(--primary)',
               }}
             >
               <span
-                className="w-1.5 h-1.5 rounded-full animate-pulse"
-                style={{ background: 'var(--primary-container)' }}
+                className={`w-1.5 h-1.5 rounded-full ${emergencyMode ? 'animate-ping' : 'animate-pulse'}`}
+                style={{ background: emergencyMode ? 'var(--error)' : 'var(--primary-container)' }}
               />
-              SYSTEM OK
+              {emergencyMode ? 'SYSTEM ALERT' : 'SYSTEM OK'}
             </span>
-            <button
-              className="p-2 rounded-lg relative"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-variant)' }}
-              aria-label="Notifications"
-            >
-              <Bell size={20} />
-              <span
-                className="absolute top-1 right-1 w-2 h-2 rounded-full"
-                style={{ background: 'var(--error)' }}
-              />
-            </button>
-            <button
-              className="p-2 rounded-lg"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-variant)' }}
-              aria-label="Help"
-            >
-              <HelpCircle size={20} />
-            </button>
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--primary-container))',
-                color: 'white',
-                fontFamily: 'var(--font-display)',
-              }}
-            >
-              A
+
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowNotifications(!showNotifications); setShowProfile(false); setShowHelp(false); }}
+                className="p-2 rounded-lg relative hover:bg-surface-low transition-colors"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-variant)' }}
+                aria-label="Notifications"
+              >
+                <Bell size={20} />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: 'var(--error)' }} />
+              </button>
+              
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-3 w-80 card shadow-2xl z-50 p-4 border-none"
+                    style={{ background: 'var(--surface-lowest)' }}
+                  >
+                    <div className="flex items-center justify-between mb-3 border-b border-outline-variant pb-2">
+                       <h4 className="title-sm">Live Alerts</h4>
+                       <span className="mono-sm text-[10px] text-error">3 NEW</span>
+                    </div>
+                    <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                       <div className="p-3 rounded-xl bg-error-container/10 border-l-2 border-error">
+                          <p className="text-xs font-bold">CRITICAL: Bin #0482 Overflow</p>
+                          <p className="text-[10px] opacity-70 mt-1">Mira Road East • 2m ago</p>
+                       </div>
+                       <div className="p-3 rounded-xl bg-surface-low border-l-2 border-primary">
+                          <p className="text-xs font-bold">Route Optimization Ready</p>
+                          <p className="text-[10px] opacity-70 mt-1">AI Engine • 45m ago</p>
+                       </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Help */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowHelp(true); setShowProfile(false); setShowNotifications(false); }}
+                className="p-2 rounded-lg hover:bg-surface-low transition-colors"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--on-surface-variant)' }}
+                aria-label="Help"
+              >
+                <HelpCircle size={20} />
+              </button>
+              
+              <HelpGuide isOpen={showHelp} onClose={() => setShowHelp(false)} />
+            </div>
+
+            <div className="relative">
+              <div
+                onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); setShowHelp(false); }}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold cursor-pointer shadow-md hover:scale-105 transition-transform"
+                style={{
+                  background: 'linear-gradient(135deg, var(--primary), var(--primary-container))',
+                  color: 'white',
+                  fontFamily: 'var(--font-display)',
+                }}
+              >
+                AD
+              </div>
+              
+              <AnimatePresence>
+                {showProfile && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-3 w-56 card shadow-2xl z-50 p-2 border-none"
+                    style={{ background: 'var(--surface-lowest)' }}
+                  >
+                    <div className="px-4 py-3 border-b border-outline-variant mb-2 bg-surface-low rounded-xl">
+                       <p className="text-xs font-bold leading-none">Administrator</p>
+                       <p className="text-[10px] opacity-60 mt-1">ops-lead@wasteiq.io</p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <Link 
+                        href="/admin/settings"
+                        onClick={() => setShowProfile(false)}
+                        className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-surface-low text-xs flex items-center gap-3 transition-colors border-none cursor-pointer no-underline"
+                        style={{ color: 'var(--on-surface)' }}
+                      >
+                        <Settings size={14} className="opacity-60" /> Operation Settings
+                      </Link>
+                      <Link 
+                        href="/login"
+                        className="w-full text-left px-4 py-2.5 rounded-xl hover:bg-error-container/10 text-xs text-error flex items-center gap-3 transition-colors border-none cursor-pointer no-underline"
+                      >
+                        <LogOut size={14} className="opacity-60" /> Terminate Session
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>
@@ -274,6 +382,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             style={{
               background: 'linear-gradient(135deg, #C62828, #E53935)',
               color: 'white',
+              boxShadow: '0 4px 12px rgba(229, 57, 53, 0.4)',
             }}
           >
             <div className="flex items-center gap-3">
@@ -284,28 +393,58 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               >
                 ⚠ Emergency Mode Active
               </span>
-              <span className="mono-sm" style={{ opacity: 0.8 }}>
+              <span className="mono-sm bg-white/20 px-2 py-0.5 rounded-md" style={{ opacity: 0.9 }}>
                 02:14:38
               </span>
             </div>
-            <button
-              onClick={toggleEmergencyMode}
-              className="px-4 py-1.5 rounded-lg text-xs font-bold uppercase"
-              style={{
-                background: 'rgba(255,255,255,0.2)',
-                border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white',
-                cursor: 'pointer',
-              }}
-            >
-              Deactivate
-            </button>
+            
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => toast.error('Emergency broadcast sent to all active drivers in the area.', { icon: '🚨' })}
+                className="px-4 py-1.5 rounded-lg text-xs font-bold uppercase hover:bg-white/30 transition-colors"
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  border: 'none',
+                }}
+              >
+                Broadcast Alert
+              </button>
+              <button
+                onClick={() => toast.info('Rerouting all nearby units to high-priority overflow zones.', { icon: '🗺️' })}
+                className="px-4 py-1.5 rounded-lg text-xs font-bold uppercase hover:bg-white/30 transition-colors"
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  border: 'none',
+                }}
+              >
+                Dispatch Units
+              </button>
+              <button
+                onClick={() => {
+                  toggleEmergencyMode();
+                  toast.success('Emergency mode deactivated. Resuming normal operations.');
+                }}
+                className="px-4 py-1.5 rounded-lg text-xs font-bold uppercase hover:bg-white hover:text-red-600 transition-colors"
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: '1px solid rgba(255,255,255,0.4)',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                Deactivate
+              </button>
+            </div>
           </motion.div>
         )}
 
         {/* Page Content */}
         <main className="flex-1 p-6">{children}</main>
-      </div>
+      </motion.div>
     </div>
   );
 }

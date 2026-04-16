@@ -4,7 +4,7 @@
  * 4-column grid with brand, platform links, governance, and newsletter.
  */
 import Link from 'next/link';
-import { Recycle, Globe, Share2, Send } from 'lucide-react';
+import { Globe, Share2, Send } from 'lucide-react';
 
 const platformLinks = [
   { label: 'Live Status', href: '/transparency' },
@@ -26,7 +26,7 @@ export default function Footer() {
         {/* Brand Column */}
         <div className="md:col-span-1">
           <div className="flex items-center gap-2 mb-6">
-            <Recycle size={22} style={{ color: 'var(--primary)' }} strokeWidth={2.5} />
+            <img src="/logo.png" alt="WasteIQ Logo" className="w-12 h-12 object-contain" />
             <span
               className="text-xl font-bold"
               style={{ fontFamily: 'var(--font-display)', color: 'var(--on-surface)' }}
@@ -178,7 +178,7 @@ export default function Footer() {
             color: 'var(--outline)',
           }}
         >
-          © 2025 WasteIQ. Curating the future of civic sustainability. Mira-Bhayandar
+          © 2026 WasteIQ. Curating the future of civic sustainability. Mira-Bhayandar
           Municipal Corporation Official Technology Partner.
         </p>
       </div>
