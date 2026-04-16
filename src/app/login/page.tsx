@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Recycle, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 
 type Role = 'CITIZEN' | 'DRIVER' | 'ADMIN';
@@ -79,6 +79,28 @@ export default function LoginPage() {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setEmail(roleConfig[activeRole].email);
+    setPassword('demo1234');
+    setIsLoading(true);
+    toast.loading(`Authenticating as ${activeRole} (Demo)...`, { id: 'login' });
+
+    try {
+      await new Promise((r) => setTimeout(r, 800));
+      toast.success(`Demo Login Successful! Redirecting...`, {
+        id: 'login',
+        duration: 2000,
+      });
+      setTimeout(() => {
+        router.push(roleConfig[activeRole].redirect);
+      }, 500);
+    } catch {
+      toast.error('Demo authentication failed.', { id: 'login' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleOAuth = () => {
     toast.loading('Connecting to Google...', { id: 'google' });
     setTimeout(() => {
@@ -108,7 +130,7 @@ export default function LoginPage() {
         {/* Logo + Tagline */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-3 no-underline">
-            <Recycle size={32} style={{ color: 'var(--primary)' }} strokeWidth={2.5} />
+            <img src="/logo.png" alt="WasteIQ Logo" className="w-16 h-16 object-contain" />
             <span
               className="text-2xl font-bold"
               style={{ fontFamily: 'var(--font-display)', color: 'var(--primary)', letterSpacing: '-0.03em' }}
@@ -247,6 +269,44 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            <div className="flex flex-col gap-3 mt-4">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px" style={{ background: 'var(--outline-variant)' }} />
+                <span className="text-[9px] font-bold uppercase" style={{ color: 'var(--outline)', letterSpacing: '0.1em' }}>Demo Access</span>
+                <div className="flex-1 h-px" style={{ background: 'var(--outline-variant)' }} />
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2">
+                {(['CITIZEN', 'DRIVER', 'ADMIN'] as Role[]).map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    className="flex flex-col items-center justify-center py-3 rounded-xl transition-all hover:scale-105 active:scale-95 border"
+                    style={{
+                      background: 'var(--surface-lowest)',
+                      borderColor: 'var(--outline-variant)',
+                      cursor: 'pointer',
+                      boxShadow: 'var(--shadow-sm)'
+                    }}
+                    onClick={async () => {
+                      setActiveRole(role);
+                      setEmail(roleConfig[role].email);
+                      setPassword('demo1234');
+                      toast.loading(`Logging in as ${role}...`, { id: 'login' });
+                      await new Promise(r => setTimeout(r, 800));
+                      toast.success(`Welcome ${role}!`, { id: 'login' });
+                      router.push(roleConfig[role].redirect);
+                    }}
+                  >
+                    <span className="text-[18px] mb-1">
+                      {role === 'CITIZEN' ? '🏠' : role === 'DRIVER' ? '🚛' : '🔑'}
+                    </span>
+                    <span className="text-[8px] font-bold uppercase" style={{ color: 'var(--on-surface)' }}>{role}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </form>
 
           {/* Google OAuth (Citizens only) */}

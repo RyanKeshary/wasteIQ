@@ -63,6 +63,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'WasteIQ',
+  },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {
@@ -70,6 +76,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
 };
+
+import PWARegistration from '@/components/PWARegistration';
 
 export default function RootLayout({
   children,
@@ -82,7 +90,14 @@ export default function RootLayout({
       className={`${plusJakarta.variable} ${workSans.variable} ${firaCode.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+      </head>
       <body>
+        <PWARegistration />
         {children}
         <Toaster
           position="top-right"

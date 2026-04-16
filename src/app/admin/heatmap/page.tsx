@@ -5,6 +5,11 @@
 'use client';
 
 import { Activity, MapPin } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const LiveMap = dynamic(() => import('@/components/admin/LiveMap'), {
+  ssr: false,
+});
 
 const zones = [
   { name: 'Mira Road (E)', activity: 92, bins: 245 },
@@ -34,29 +39,12 @@ export default function AdminHeatmapPage() {
         </p>
       </div>
 
-      {/* Map Placeholder */}
+      {/* Map Content */}
       <div
-        className="card p-0 overflow-hidden mb-6"
+        className="card p-0 overflow-hidden mb-6 relative z-0"
         style={{ height: '350px' }}
       >
-        <div
-          className="w-full h-full relative flex items-center justify-center"
-          style={{ background: 'var(--surface-low)' }}
-        >
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage: `
-                linear-gradient(var(--outline-variant) 1px, transparent 1px),
-                linear-gradient(90deg, var(--outline-variant) 1px, transparent 1px)
-              `,
-              backgroundSize: '32px 32px',
-            }}
-          />
-          <div className="glass px-5 py-3 rounded-full text-sm font-medium z-10" style={{ color: 'var(--on-surface-variant)' }}>
-            🔥 Heatmap overlay with Leaflet HeatLayer plugin
-          </div>
-        </div>
+        <LiveMap />
       </div>
 
       {/* Zone Grid */}

@@ -4,10 +4,11 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QrCode, Camera, CheckCircle, AlertTriangle, MapPin } from 'lucide-react';
+import { QrCode, Camera, CheckCircle, AlertTriangle, MapPin, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 interface ScanResult {
   binId: string;
@@ -30,34 +31,75 @@ export default function DriverScanPage() {
   const [scanState, setScanState] = useState<ScanState>('scanning');
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [scanCount, setScanCount] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const simulateScan = () => {
+  const startCamera = async () => {
+    try {
+      const constraints = {
+        video: { facingMode: 'environment' }
+      };
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Camera access error:', err);
+      setError('Camera permission denied or not available.');
+      toast.error('Could not access camera. Please check permissions.');
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+  };
+
+  useEffect(() => {
+    if (scanState === 'scanning') {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+    return () => stopCamera();
+  }, [scanState]);
+
+  const processScan = () => {
     setScanState('processing');
-    toast.loading('Processing QR code...', { id: 'scan' });
+    toast.loading('Analyzing Geospatial QR...', { id: 'scan' });
 
     setTimeout(() => {
       const randomBin = mockBins[scanCount % mockBins.length];
       setScanResult(randomBin);
       setScanState('result');
-      toast.success(`Bin ${randomBin.binId} identified`, { id: 'scan' });
-    }, 1200);
+      toast.success(`Node ${randomBin.binId} Synced`, { id: 'scan' });
+    }, 1800);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processScan();
+    }
   };
 
   const confirmCollection = () => {
     if (!scanResult) return;
     setScanState('confirmed');
     setScanCount((c) => c + 1);
-    toast.success(`Collection confirmed for ${scanResult.binId} ✅`, {
-      description: `Bin reset to 0%. Performance data logged.`,
-      duration: 3000,
+    toast.success(`Collection Logged for ${scanResult.binId}`, {
+      description: `Inventory updated. Next node assigned.`,
     });
   };
 
   const reportIssue = () => {
     if (!scanResult) return;
-    toast.warning(`Maintenance report filed for ${scanResult.binId}`, {
-      description: 'The operations team has been notified.',
-      duration: 3000,
+    toast.error(`Maintenance Incident Logged`, {
+      description: `Technician dispatched to ${scanResult.binId}.`,
     });
     resetScan();
   };
@@ -68,193 +110,227 @@ export default function DriverScanPage() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="headline-lg mb-1">Scan Bin QR</h1>
-            <p className="body-md" style={{ color: 'var(--on-surface-variant)' }}>
-              Scan to verify collection or report maintenance
-            </p>
-          </div>
-          {scanCount > 0 && (
-            <span
-              className="text-[10px] font-bold px-3 py-1 rounded-full"
-              style={{ background: 'var(--success-container)', color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}
-            >
-              {scanCount} scanned today
-            </span>
-          )}
+    <div className="max-w-[1000px] mx-auto">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="headline-lg">Optical Node Scanner</h1>
+          <p className="body-md opacity-70">Verify collection using the on-board node identification system.</p>
         </div>
+        {scanCount > 0 && (
+          <div className="card bg-success-container/20 border-primary/20 px-4 py-2 flex items-center gap-3">
+             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+             <span className="mono-sm font-bold text-primary">{scanCount} Nodes Validated Today</span>
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
-        {/* SCANNING STATE */}
         {scanState === 'scanning' && (
           <motion.div
             key="scanner"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            className="flex flex-col items-center"
           >
-            <div
-              className="card p-0 overflow-hidden mb-4"
-              style={{ height: '320px' }}
-            >
-              <div
-                className="w-full h-full relative flex items-center justify-center"
-                style={{ background: '#1a1a1a' }}
-              >
-                <div
-                  className="w-48 h-48 relative"
-                  style={{ border: '3px solid var(--primary)', borderRadius: '16px' }}
-                >
-                  <div className="absolute -top-0.5 -left-0.5 w-6 h-6 border-t-4 border-l-4 rounded-tl-lg" style={{ borderColor: 'var(--primary-container)' }} />
-                  <div className="absolute -top-0.5 -right-0.5 w-6 h-6 border-t-4 border-r-4 rounded-tr-lg" style={{ borderColor: 'var(--primary-container)' }} />
-                  <div className="absolute -bottom-0.5 -left-0.5 w-6 h-6 border-b-4 border-l-4 rounded-bl-lg" style={{ borderColor: 'var(--primary-container)' }} />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 border-b-4 border-r-4 rounded-br-lg" style={{ borderColor: 'var(--primary-container)' }} />
-                  <motion.div
-                    className="absolute left-2 right-2 h-0.5"
-                    style={{ background: 'var(--primary-container)', boxShadow: '0 0 12px var(--primary-container)' }}
-                    animate={{ top: ['10%', '90%', '10%'] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-                  />
+            <div className="w-full h-[450px] md:h-[600px] card p-0 overflow-hidden mb-8 relative bg-black shadow-2xl group">
+              {error ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
+                  <AlertTriangle size={48} className="text-error mb-4" />
+                  <p className="title-md mb-2">{error}</p>
+                  <button onClick={startCamera} className="btn-primary mt-4">Retry Camera Access</button>
                 </div>
-                <QrCode
-                  size={32}
-                  className="absolute"
-                  style={{ color: 'rgba(255,255,255,0.15)' }}
+              ) : (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-cover opacity-80"
                 />
+              )}
+              
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                 <div className="relative w-64 h-64 md:w-80 md:h-80">
+                    <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-3xl shadow-[0_0_20px_var(--primary)]" />
+                    <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-3xl shadow-[0_0_20px_var(--primary)]" />
+                    <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-3xl shadow-[0_0_20px_var(--primary)]" />
+                    <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-3xl shadow-[0_0_20px_var(--primary)]" />
+                    
+                    <motion.div
+                      animate={{ top: ['5%', '95%', '5%'] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute left-4 right-4 h-1 bg-primary/80 shadow-[0_0_30px_var(--primary)]"
+                    />
+                    
+                    <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                       <QrCode size={120} className="text-white" />
+                    </div>
+                 </div>
+              </div>
+
+              <div className="absolute top-6 left-6 p-4 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-white mono-sm">
+                 <div className="flex items-center gap-2 mb-1">
+                    <span className={`w-2 h-2 rounded-full ${stream ? 'bg-primary animate-ping' : 'bg-error'}`} />
+                    CAM_DRV_01: {stream ? 'ACTIVE' : 'OFFLINE'}
+                 </div>
+                 <div className="opacity-60">SENS_VAL: {stream ? 'STABLE' : 'N/A'} | RES: 1080P</div>
+              </div>
+
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+                 <button 
+                  onClick={processScan}
+                  disabled={!stream}
+                  className="px-10 py-4 rounded-full bg-primary text-white font-bold title-sm shadow-[0_0_40px_var(--primary)] hover:scale-105 transition-transform flex items-center gap-3 disabled:opacity-50"
+                 >
+                    <Camera size={20} /> Capture Node Visual
+                 </button>
               </div>
             </div>
-            <p className="body-sm text-center mb-4" style={{ color: 'var(--on-surface-variant)' }}>
-              Position the QR code within the frame to scan
-            </p>
-            <button className="btn-primary w-full" onClick={simulateScan}>
-              <Camera size={16} /> Simulate Scan
-            </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+               <div className="card p-6 flex items-center gap-4 bg-surface-lowest">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <QrCode size={24} />
+                  </div>
+                  <div>
+                    <h4 className="title-sm">Auto-Identify</h4>
+                    <p className="body-xs text-outline">System will automatically parse node metadata.</p>
+                  </div>
+               </div>
+               <label className="card p-6 flex items-center gap-4 bg-surface-lowest cursor-pointer hover:border-primary transition-colors">
+                  <div className="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+                    <Upload size={24} />
+                  </div>
+                  <div>
+                    <h4 className="title-sm">Manual Upload</h4>
+                    <p className="body-xs text-outline">Upload a high-res JPG/PNG of the QR plate.</p>
+                  </div>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+               </label>
+            </div>
           </motion.div>
         )}
 
-        {/* PROCESSING STATE */}
         {scanState === 'processing' && (
           <motion.div
             key="processing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-16"
+            className="flex flex-col items-center py-20"
           >
-            <div className="animate-spin w-12 h-12 border-4 border-t-transparent rounded-full mx-auto mb-4" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />
-            <p className="title-md">Processing QR Code...</p>
+            <div className="relative w-40 h-40 flex items-center justify-center mb-8">
+               <div className="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+               <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+               >
+                 <QrCode size={48} className="text-primary" />
+               </motion.div>
+            </div>
+            <h2 className="headline-sm">Neural Image Analysis</h2>
+            <p className="body-md mt-2 opacity-60">Cross-referencing with global node registry...</p>
           </motion.div>
         )}
 
-        {/* RESULT STATE */}
         {scanState === 'result' && scanResult && (
           <motion.div
             key="result"
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start"
           >
-            <div className="text-center mb-6">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                <CheckCircle size={56} style={{ color: 'var(--primary)', margin: '0 auto' }} />
-              </motion.div>
-              <h2 className="title-lg mt-3" style={{ color: 'var(--primary)' }}>Bin Scanned!</h2>
+            <div className="space-y-6">
+              <div className="card p-8 border-2 border-primary/20 shadow-xl bg-surface-lowest">
+                <div className="flex items-start justify-between mb-8">
+                   <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/30">
+                     <CheckCircle size={32} />
+                   </div>
+                   <div className="text-right">
+                      <span className="mono-sm font-bold text-primary">NODE IDENTIFIED</span>
+                      <div className="headline-md mt-1">{scanResult.binId}</div>
+                   </div>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                   <div className="flex justify-between items-end">
+                      <span className="text-xs font-bold uppercase tracking-widest text-outline">Telemetry Content</span>
+                      <span className="title-md">{scanResult.fillLevel}% (Saturation High)</span>
+                   </div>
+                   <div className="w-full h-4 rounded-full bg-surface-low overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${scanResult.fillLevel}%` }}
+                        className={`h-full ${scanResult.fillLevel > 80 ? 'bg-error' : 'bg-primary'}`}
+                      />
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="bg-surface-low p-4 rounded-2xl">
+                      <div className="text-[10px] font-bold uppercase text-outline">Zone Authority</div>
+                      <div className="title-sm mt-1">{scanResult.zone}</div>
+                   </div>
+                   <div className="bg-surface-low p-4 rounded-2xl">
+                      <div className="text-[10px] font-bold uppercase text-outline">Substance Type</div>
+                      <div className="title-sm mt-1">{scanResult.type} Content</div>
+                   </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                 <button className="btn-primary h-16 text-lg shadow-primary/20" onClick={confirmCollection}>
+                    Complete Node Collection
+                 </button>
+                 <button className="btn-ghost h-16 text-lg text-error hover:bg-error/5" onClick={reportIssue}>
+                    Log Maintenance Incident
+                 </button>
+              </div>
             </div>
-            <div className="card p-5 mb-4" style={{ borderLeft: '4px solid var(--primary)' }}>
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <span className="text-lg font-bold" style={{ fontFamily: 'var(--font-mono)' }}>{scanResult.binId}</span>
-                  <p className="body-sm mt-0.5" style={{ color: 'var(--on-surface-variant)' }}>
-                    <MapPin size={12} className="inline" /> {scanResult.address}
+
+            <div className="card p-0 overflow-hidden h-[540px] relative hidden lg:block border-none">
+               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542362567-b05537639097?auto=format&fit=crop&q=80&w=1000')] bg-cover saturate-[0.2] opacity-40" />
+               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-surface" />
+               
+               <div className="relative p-10 flex flex-col h-full">
+                  <div className="title-lg mb-4">Node Visual Signature</div>
+                  <div className="flex-1 rounded-3xl border-2 border-dashed border-primary/30 flex items-center justify-center">
+                     <div className="w-48 h-48 bg-white p-4 rounded-3xl shadow-2xl">
+                        <img 
+                          src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WASTEIQ-NODE-SYNC" 
+                          className="w-full h-full"
+                          alt="Node Signature"
+                        />
+                     </div>
+                  </div>
+                  <p className="body-sm text-center mt-6 text-outline bg-white/60 backdrop-blur px-6 py-4 rounded-2xl">
+                    Historical data suggests this bin fills up 20% faster on weekends. Logistics team notified to increase frequency.
                   </p>
-                </div>
-                <span
-                  className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full"
-                  style={{
-                    background: scanResult.fillLevel >= 80 ? 'var(--error-container)' : 'var(--warning-container)',
-                    color: scanResult.fillLevel >= 80 ? 'var(--error)' : 'var(--warning)',
-                    fontFamily: 'var(--font-mono)',
-                  }}
-                >
-                  {scanResult.fillLevel}% Full
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className="p-2 rounded-lg" style={{ background: 'var(--surface-low)' }}>
-                  <span className="text-[10px] uppercase" style={{ color: 'var(--outline)' }}>Type</span>
-                  <p className="mono-sm font-bold">{scanResult.type}</p>
-                </div>
-                <div className="p-2 rounded-lg" style={{ background: 'var(--surface-low)' }}>
-                  <span className="text-[10px] uppercase" style={{ color: 'var(--outline)' }}>Zone</span>
-                  <p className="mono-sm font-bold">{scanResult.zone}</p>
-                </div>
-              </div>
-              <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: 'var(--surface-high)' }}>
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${scanResult.fillLevel}%` }}
-                  transition={{ duration: 0.6 }}
-                  className="h-full rounded-full"
-                  style={{
-                    background: scanResult.fillLevel >= 80 ? 'var(--error)' : 'var(--warning)',
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <button className="btn-primary w-full" onClick={confirmCollection}>
-                <CheckCircle size={14} /> Confirm Collection
-              </button>
-              <button
-                className="btn-ghost w-full"
-                style={{ color: 'var(--warning)' }}
-                onClick={reportIssue}
-              >
-                <AlertTriangle size={14} /> Report Issue
-              </button>
-              <button className="btn-ghost w-full text-sm" onClick={resetScan}>
-                Scan Another Bin
-              </button>
+               </div>
             </div>
           </motion.div>
         )}
 
-        {/* CONFIRMED STATE */}
         {scanState === 'confirmed' && (
           <motion.div
             key="confirmed"
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-12"
+            className="flex flex-col items-center py-20 text-center max-w-[500px] mx-auto"
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            >
-              <div
-                className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-                style={{ background: 'var(--success-container)' }}
-              >
-                <CheckCircle size={40} style={{ color: 'var(--primary)' }} />
-              </div>
-            </motion.div>
-            <h2 className="headline-md mb-2" style={{ color: 'var(--primary)' }}>Collection Confirmed!</h2>
-            <p className="body-md mb-6" style={{ color: 'var(--on-surface-variant)' }}>
-              Bin has been reset and performance data logged.
-            </p>
-            <button className="btn-primary" onClick={resetScan}>
-              <Camera size={14} /> Scan Next Bin
-            </button>
+            <div className="w-24 h-24 rounded-full bg-success-container flex items-center justify-center text-primary mb-8 shadow-xl">
+               <CheckCircle size={56} />
+            </div>
+            <h2 className="headline-md">Sync Finalized</h2>
+            <p className="body-md mt-3 opacity-60">Bin inventory has been officially cleared in the central database. You are authorized to proceed to the next waypoint.</p>
+            
+            <div className="grid grid-cols-2 gap-4 w-full mt-10">
+               <button className="btn-primary py-4" onClick={resetScan}>
+                  Scan Next Node
+               </button>
+               <Link href="/driver" className="btn-ghost py-4 no-underline border-2">
+                  View Route Summary
+               </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
