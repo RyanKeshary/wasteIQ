@@ -29,6 +29,14 @@ export const complaintRateLimit = new Ratelimit({
   prefix: 'wasteiq:rl:complaint',
 });
 
+/** Chat messaging: 1 message per 5 seconds per user */
+export const chatRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(1, '5 s'),
+  analytics: true,
+  prefix: 'wasteiq:rl:chat',
+});
+
 /**
  * Get identifier from request for rate limiting.
  * Uses X-Forwarded-For header or falls back to a default.

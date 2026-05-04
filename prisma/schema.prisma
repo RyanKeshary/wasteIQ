@@ -110,11 +110,36 @@ model ScanLog {
   timestamp DateTime   @default(now())
   latitude  Float?
   longitude Float?
+  scanMethod ScanMethod @default(QR)
   bin       Bin        @relation(fields: [binId], references: [id], onDelete: Cascade)
   driver    Driver     @relation(fields: [driverId], references: [id], onDelete: Cascade)
 
   @@index([binId, timestamp])
   @@index([driverId, timestamp])
+}
+
+model CallLog {
+  id           String     @id @default(cuid())
+  complaintId  String
+  complaint    Complaint  @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  initiatedBy  UserRole
+  status       CallStatus @default(INITIATED)
+  duration     Int?       // in seconds
+  createdAt    DateTime   @default(now())
+
+  @@index([complaintId])
+}
+
+enum CallStatus {
+  INITIATED
+  CONNECTED
+  MISSED
+  FAILED
+}
+
+enum ScanMethod {
+  QR
+  OCR
 }
 
 enum ScanAction {
@@ -249,9 +274,59 @@ model Complaint {
   citizen     Citizen?        @relation(fields: [citizenId], references: [id])
   bin         Bin?            @relation(fields: [binId], references: [id])
 
+  // OCR Data
+  ocrText         String?         @db.Text
+  ocrKeywords     String[]        @default([])
+  ocrLocationHint String?
+  ocrConfidence   Float?
+  
+  // Emergency SOS Extension
+  isEmergency          Boolean         @default(false)
+  emergencyLevel       EmergencyLevel  @default(LOW)
+  verifiedEmergency    Boolean         @default(false)
+  emergencyScore       Float           @default(0)
+  emergencyTriggeredAt DateTime?
+  
+  // Chat & Communication Extension
+  chatEnabled        Boolean         @default(false)
+  callEnabled        Boolean         @default(false)
+  chatExpiresAt      DateTime?
+  escalationLevel    EscalationLevel @default(NONE)
+  governmentAssigned Boolean         @default(false)
+  messages           Message[]
+  callLogs           CallLog[]
+
   @@index([status])
   @@index([citizenId])
   @@index([createdAt(sort: Desc)])
+}
+
+enum EscalationLevel {
+  NONE
+  CALL
+  GOVERNMENT
+}
+
+model Message {
+  id            String      @id @default(cuid())
+  complaintId   String
+  complaint     Complaint   @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  senderId      String
+  senderRole    UserRole
+  content       String      @db.Text
+  type          MessageType @default(TEXT)
+  createdAt     DateTime    @default(now())
+  isRead        Boolean     @default(false)
+  payload       Json?       // For QUICK_REPLY structured data
+
+  @@index([complaintId, createdAt])
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+  QUICK_REPLY
 }
 
 enum ComplaintStatus {
@@ -260,6 +335,13 @@ enum ComplaintStatus {
   RESOLVED
   CLOSED
   ESCALATED
+}
+
+enum EmergencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
 // ── CITIZENS ─────────────────────────────────────────────────────
@@ -309,5 +391,6 @@ enum AlertType {
   SENSOR_OFFLINE
   ROUTE_DELAY
   EMERGENCY
+  EMERGENCY_SOS
   WEATHER
 }

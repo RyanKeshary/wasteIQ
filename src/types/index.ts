@@ -15,7 +15,8 @@ export type ZoneType = 'RESIDENTIAL' | 'COMMERCIAL' | 'HOSPITAL' | 'MARKET' | 'C
 export type RouteStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'EMERGENCY';
 export type StopStatus = 'PENDING' | 'SKIPPED' | 'COMPLETED';
 export type ComplaintStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED' | 'ESCALATED';
-export type AlertType = 'OVERFLOW' | 'CRITICAL_FILL' | 'SENSOR_OFFLINE' | 'ROUTE_DELAY' | 'EMERGENCY' | 'WEATHER';
+export type EmergencyLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type AlertType = 'OVERFLOW' | 'CRITICAL_FILL' | 'SENSOR_OFFLINE' | 'ROUTE_DELAY' | 'EMERGENCY' | 'EMERGENCY_SOS' | 'WEATHER';
 
 // ── Models ───────────────────────────────────────────────────
 
@@ -151,6 +152,13 @@ export interface Complaint {
   updatedAt: string;
   citizen?: Citizen;
   bin?: Bin;
+
+  // Emergency SOS Extension
+  isEmergency: boolean;
+  emergencyLevel: EmergencyLevel;
+  verifiedEmergency: boolean;
+  emergencyScore: number;
+  emergencyTriggeredAt: string | null;
 }
 
 export interface Citizen {

@@ -1,0 +1,25 @@
+{
+  "common": {
+    "submit": "सादर करा",
+    "cancel": "रद्द करा",
+    "back": "मागे",
+    "loading": "लोड होत आहे..."
+  },
+  "nav": {
+    "dashboard": "डॅशबोर्ड",
+    "complaints": "तक्रारी",
+    "bins": "कचराकुंडी",
+    "route": "मार्ग",
+    "settings": "सेटिंग्ज"
+  },
+  "complaint": {
+    "title": "समस्या कळवा",
+    "description": "समस्येचे तपशीलवार वर्णन करा",
+    "category": "वर्ग",
+    "location": "ठिकाण",
+    "status": "स्थिती",
+    "submit_btn": "तक्रार नोंदवा",
+    "chat_driver": "ड्रायव्हरशी चॅट करा",
+    "call_driver": "ड्रायव्हरला कॉल करा"
+  }
+}

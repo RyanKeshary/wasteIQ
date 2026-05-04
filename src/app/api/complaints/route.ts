@@ -6,6 +6,8 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { apiSuccess, apiError } from '@/lib/api-response';
+import { processComplaintOCR } from '@/lib/ocr';
+import { validateEmergencyComplaint } from '@/lib/emergency';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,7 +45,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, category, latitude, longitude, citizenId, binId, imageUrl } = body;
+    const { 
+      title, description, category, latitude, longitude, citizenId, binId, imageUrl,
+      isEmergency, emergencyLevel 
+    } = body;
 
     if (!title || !description) {
       return apiError('Missing required fields: title, description');
@@ -58,9 +63,27 @@ export async function POST(request: NextRequest) {
         citizenId: citizenId || null,
         binId: binId || null,
         imageUrl: imageUrl || null,
-        priority: 2,
+        priority: isEmergency ? 1 : 2,
+        isEmergency: !!isEmergency,
+        emergencyLevel: emergencyLevel || 'LOW',
       },
     });
+
+    // If emergency, trigger validation immediately (wait for it or fire-and-forget?)
+    // To provide immediate feedback if it's downgraded, we might wait, 
+    // but the request says "trigger alert system" etc. which can happen in background.
+    if (isEmergency) {
+      validateEmergencyComplaint(complaint.id).catch(err =>
+        console.error('[Emergency Validation Trigger Failed]', err)
+      );
+    }
+
+    // Trigger OCR in background (fire-and-forget)
+    if (complaint.imageUrl) {
+      processComplaintOCR(complaint.id).catch(err => 
+        console.error('[OCR Background Trigger Failed]', err)
+      );
+    }
 
     return apiSuccess(complaint, 201);
   } catch (error) {

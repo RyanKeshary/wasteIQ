@@ -1,0 +1,25 @@
+{
+  "common": {
+    "submit": "સબમિટ કરો",
+    "cancel": "રદ કરો",
+    "back": "પાછા",
+    "loading": "લોડ થઈ રહ્યું છે..."
+  },
+  "nav": {
+    "dashboard": "ડેશબોર્ડ",
+    "complaints": "ફરિયાદો",
+    "bins": "કચરાપેટી",
+    "route": "માર્ગ",
+    "settings": "સેટિંગ્સ"
+  },
+  "complaint": {
+    "title": "સમસ્યા જણાવો",
+    "description": "સમસ્યાનું વિગતવાર વર્ણન કરો",
+    "category": "શ્રેણી",
+    "location": "સ્થળ",
+    "status": "સ્થિતિ",
+    "submit_btn": "ફરિયાદ સબમિટ કરો",
+    "chat_driver": "ડ્રાઈવર સાથે વાત કરો",
+    "call_driver": "ડ્રાઈવરને કોલ કરો"
+  }
+}
