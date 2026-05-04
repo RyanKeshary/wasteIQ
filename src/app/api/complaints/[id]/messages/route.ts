@@ -20,14 +20,15 @@ const BANNED_KEYWORDS = ['spam', 'abuse', 'hack', 'fuck', 'shit']; // Basic plac
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
     console.log('[DEBUG] API Session:', session?.user?.id, session?.user?.role);
     if (!session) return apiError('Unauthorized', 401);
 
-    const complaintId = params.id;
+    const { id } = await params;
+    const complaintId = id;
 
     const complaint = await prisma.complaint.findUnique({
       where: { id: complaintId },
@@ -69,7 +70,7 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -77,11 +78,12 @@ export async function POST(
     if (!session) return apiError('Unauthorized', 401);
 
     // 1. Rate Limiting
-    const identifier = `${session.user.id}:${params.id}`;
+    const { id } = await params;
+    const identifier = `${session.user.id}:${id}`;
     const { success } = await chatRateLimit.limit(identifier);
     if (!success) return apiError('Too many messages. Slow down!', 429);
 
-    const complaintId = params.id;
+    const complaintId = id;
     const { content, type = 'TEXT', payload } = await request.json();
 
     // 2. Content Validation

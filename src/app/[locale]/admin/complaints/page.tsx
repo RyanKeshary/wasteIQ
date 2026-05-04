@@ -40,6 +40,7 @@ interface ComplaintItem {
     locationHint?: string;
   };
   isEmergency?: boolean;
+  verifiedEmergency?: boolean;
 }
 
 const initialComplaints: ComplaintItem[] = [
