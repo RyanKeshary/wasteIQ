@@ -11,11 +11,12 @@ import { ablyServer, CHANNELS } from '@/lib/ably';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const complaint = await prisma.complaint.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         citizen: { include: { user: { select: { name: true, avatar: true } } } },
         bin: true,
@@ -35,14 +36,15 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
     if (!session) return apiError('Unauthorized', 401);
 
     const { status, assignedTo } = await request.json();
-    const complaintId = params.id;
+    const { id } = await params;
+    const complaintId = id;
 
     // Check permissions
     const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role);

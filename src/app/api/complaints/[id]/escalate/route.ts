@@ -11,14 +11,15 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
     if (!session) return apiError('Unauthorized', 401);
 
     const { level } = await request.json();
-    const complaintId = params.id;
+    const { id } = await params;
+    const complaintId = id;
 
     if (!['CALL', 'GOVERNMENT'].includes(level)) {
       return apiError('Invalid escalation level');

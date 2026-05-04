@@ -10,13 +10,14 @@ import { initiateMaskedCall } from '@/lib/communication';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
     if (!session) return apiError('Unauthorized', 401);
 
-    const complaintId = params.id;
+    const { id } = await params;
+    const complaintId = id;
     
     const callLog = await initiateMaskedCall(
       complaintId, 
