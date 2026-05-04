@@ -1,0 +1,51 @@
+{
+  "common": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "back": "Back",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "complaints": "Complaints",
+    "bins": "Bins",
+    "route": "Route",
+    "settings": "Settings"
+  },
+  "complaint": {
+    "title": "Report Issue",
+    "description": "Describe the problem in detail",
+    "category": "Category",
+    "location": "Location",
+    "status": "Status",
+    "submit_btn": "Submit Complaint",
+    "chat_driver": "Chat with Driver",
+    "call_driver": "Call Driver"
+  },
+  "languages": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "mr": "मराठी",
+    "gu": "ગુજરાતી",
+    "ta": "தமிழ்",
+    "bn": "বাংলা",
+    "ur": "اردو"
+  },
+  "chat": {
+    "support": "Operational Support",
+    "connecting": "Connecting...",
+    "live": "Live Channel",
+    "call": "CALL",
+    "dialing": "DIALING...",
+    "read_only": "READ-ONLY",
+    "placeholder": "Type a message...",
+    "closed": "Chat Session Closed",
+    "quick_replies": {
+      "on_way": "On my way",
+      "reached": "Reached location",
+      "resolved": "Issue resolved",
+      "share_loc": "Sharing my location",
+      "send_img": "Sending photo"
+    }
+  }
+}

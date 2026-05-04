@@ -53,7 +53,21 @@ export async function recalculatePriority(
   const healthPenalty = bin.sensorHealth ? 0 : 10;
 
   // Raw score with zone multiplier
-  const rawScore = (fillScore + timeScore + healthPenalty) * zoneWeight;
+  let rawScore = (fillScore + timeScore + healthPenalty) * zoneWeight;
+
+  // EMERGENCY BOOST: If bin has a verified emergency complaint, set to MAX
+  const activeEmergency = await prisma.complaint.findFirst({
+    where: {
+      binId: bin.id,
+      isEmergency: true,
+      verifiedEmergency: true,
+      status: { in: ['OPEN', 'IN_PROGRESS', 'ESCALATED'] }
+    }
+  });
+
+  if (activeEmergency) {
+    rawScore = 100;
+  }
 
   // Cap at 100
   const score = Math.min(Math.round(rawScore), 100);
