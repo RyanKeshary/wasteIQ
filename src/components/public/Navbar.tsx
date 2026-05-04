@@ -8,7 +8,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from 'framer-motion';
 import Link from 'next/link';
-import { Menu, X, ArrowRight, ArrowUp, Zap, Globe, Shield, BarChart3 } from 'lucide-react';
+import { Menu, X, ArrowRight, ArrowUp, Zap, Globe, Shield, BarChart3, User } from 'lucide-react';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 
 const navLinks = [
@@ -230,10 +230,9 @@ export default function Navbar() {
                 <LanguageSwitcher />
               </div>
 
-              {/* Get Started CTA — Animated gradient border */}
               <Link
                 href="/login"
-                className="hidden sm:flex items-center gap-2 no-underline text-[10px] font-black px-4 py-2 rounded-full transition-all duration-300 relative group overflow-hidden"
+                className="flex items-center gap-2 no-underline text-[10px] font-black px-3 sm:px-4 py-2 rounded-full transition-all duration-300 relative group overflow-hidden"
                 style={{
                   background: 'var(--primary)',
                   color: 'white',
@@ -259,7 +258,9 @@ export default function Navbar() {
                   }}
                 />
                 <span className="relative z-10 flex items-center gap-2">
-                  Launch Portal <ArrowRight size={13} />
+                  <span className="hidden sm:inline">Account</span>
+                  <User size={15} className="sm:hidden" />
+                  <ArrowRight size={13} className="hidden sm:inline" />
                 </span>
               </Link>
 

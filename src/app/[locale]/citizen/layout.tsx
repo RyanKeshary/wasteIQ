@@ -29,6 +29,7 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
   
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const mobileProfileRef = useRef<HTMLDivElement>(null);
 
   // Notifications state
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -43,7 +44,8 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
       }
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node) && 
+          mobileProfileRef.current && !mobileProfileRef.current.contains(event.target as Node)) {
         setShowProfileMenu(false);
       }
     }
@@ -61,7 +63,7 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
           boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between py-3 gap-8">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between py-2.5 gap-3">
           {/* Logo */}
           <Link href="/citizen" className="flex items-center gap-2 no-underline flex-shrink-0">
             <img src="/logo.png" alt="WasteIQ" className="w-10 h-10 object-contain" />
@@ -84,13 +86,55 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
             </span>
           </Link>
 
-          {/* Dynamic Page Context */}
-          <div className="flex-1 px-4 flex items-center md:hidden">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md" style={{ background: 'var(--surface-high)' }}>
-              <span className="text-sm font-semibold" style={{ color: 'var(--on-surface-variant)' }}>
-                {navItems.find(item => pathname === item.href || pathname.endsWith(item.href))?.label || 'Dashboard'}
-              </span>
-            </div>
+          {/* Mobile Account Shortcut */}
+          <div className="flex md:hidden flex-1 justify-center relative" ref={mobileProfileRef}>
+             <button 
+               onClick={() => {
+                 setShowProfileMenu(!showProfileMenu);
+                 setShowNotifications(false);
+               }}
+               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full no-underline transition-all active:scale-95 border-none"
+               style={{ background: 'var(--surface-high)', border: '1px solid var(--outline-variant)', cursor: 'pointer' }}
+             >
+               <User size={14} style={{ color: 'var(--primary)' }} />
+               <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--on-surface-variant)', letterSpacing: '0.05em' }}>Account</span>
+             </button>
+
+             {/* Mobile Profile Menu Portal (Nested for relative positioning) */}
+             <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full mt-2 w-56 rounded-xl overflow-hidden glass shadow-xl z-50 border p-2 left-1/2 -translate-x-1/2"
+                    style={{ borderColor: 'var(--outline-variant)', background: 'var(--surface)' }}
+                  >
+                    <div className="px-3 py-3 border-b mb-2 text-left" style={{ borderColor: 'var(--outline-variant)' }}>
+                      <p className="font-bold text-sm">Amit Kumar</p>
+                      <p className="text-xs" style={{ color: 'var(--outline)' }}>amit@example.com</p>
+                    </div>
+                    
+                    <Link 
+                      href="/citizen/account" 
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-black/5 dark:hover:bg-white/5 no-underline transition-colors block text-left"
+                      style={{ color: 'var(--on-surface)' }}
+                    >
+                      <Settings size={16} /> Account Settings
+                    </Link>
+
+                    <Link 
+                      href="/login" 
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-3 py-2 mt-1 rounded-lg text-sm hover:bg-black/5 dark:hover:bg-white/5 no-underline transition-colors block text-left"
+                      style={{ color: 'var(--error)' }}
+                    >
+                      <LogOut size={16} /> Sign out
+                    </Link>
+                  </motion.div>
+                )}
+             </AnimatePresence>
           </div>
 
           {/* Nav Tabs */}
@@ -118,7 +162,7 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
           </div>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-4 relative flex-shrink-0">
+          <div className="flex items-center gap-2 relative flex-shrink-0">
             <LanguageSwitcher />
             
             {/* Notification Bell */}
@@ -148,22 +192,23 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
             </div>
 
             {/* Profile Menu */}
-            <div ref={profileRef} className="relative">
+            <div ref={profileRef} className="relative hidden md:block">
               <button
-                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-transform hover:scale-105"
+                className="hidden md:flex items-center gap-2 p-1 pr-2 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/5 border border-white/10"
                 style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--primary-container))',
-                  color: 'white',
-                  fontFamily: 'var(--font-display)',
-                  border: 'none',
-                  cursor: 'pointer'
+                  background: 'var(--surface-low)',
+                  cursor: 'pointer',
+                  border: 'none'
                 }}
                 onClick={() => {
                   setShowProfileMenu(!showProfileMenu);
                   setShowNotifications(false);
                 }}
               >
-                C
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-container))', color: 'white' }}>
+                  C
+                </div>
+                <User size={14} style={{ color: 'var(--on-surface-variant)' }} />
               </button>
 
               <AnimatePresence>

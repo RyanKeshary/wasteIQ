@@ -21,6 +21,7 @@ import {
   useTransform,
   useMotionValueEvent,
   useInView,
+  AnimatePresence,
 } from 'framer-motion';
 import {
   Brain, Map, Truck, Bell, Route, ShieldCheck, Wifi,
@@ -72,10 +73,106 @@ const modules = [
 ];
 
 const steps = [
-  { num: '01', title: 'Sense',      desc: 'IoT sensors detect bin density in real-time, transmitting telemetry every 15 seconds.', icon: Wifi,        color: '#00C16A' },
-  { num: '02', title: 'Prioritize', desc: 'AI ranks nodes by urgency, hygiene impact and overflow probability.',                    icon: Brain,       color: '#39B8FD' },
-  { num: '03', title: 'Optimize',   desc: 'Algorithms minimize fuel by recalculating paths with live traffic data.',                icon: Route,       color: '#FF8842' },
-  { num: '04', title: 'Act',        desc: 'Closed-loop verification ensures zero missed pickups with GPS evidence.',                icon: ShieldCheck, color: '#00C16A' },
+  { 
+    num: '01', 
+    title: 'Sense',      
+    desc: 'IoT sensors detect bin density in real-time, transmitting telemetry every 15 seconds.', 
+    icon: Wifi,        
+    color: '#00C16A',
+    viz: (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }} 
+          transition={{ duration: 4, repeat: Infinity }}
+          className="w-64 h-64 rounded-full border border-primary/20" 
+        />
+        <div className="relative flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <Wifi size={32} className="text-primary" />
+          </div>
+          <div className="flex gap-1.5">
+            {[0, 1, 2].map(i => (
+              <motion.div 
+                key={i}
+                animate={{ scaleY: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                className="w-1 h-4 bg-primary/40 rounded-full"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  },
+  { 
+    num: '02', 
+    title: 'Prioritize', 
+    desc: 'AI ranks nodes by urgency, hygiene impact and overflow probability.',                    
+    icon: Brain,       
+    color: '#39B8FD',
+    viz: (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="absolute inset-0 bg-secondary/5 rounded-full blur-3xl" />
+        <div className="grid grid-cols-3 gap-3">
+          {[...Array(9)].map((_, i) => (
+            <motion.div 
+              key={i}
+              animate={{ 
+                scale: [1, 1.1, 1],
+                backgroundColor: i % 2 === 0 ? ['rgba(57,184,253,0.1)', 'rgba(57,184,253,0.3)', 'rgba(57,184,253,0.1)'] : 'rgba(57,184,253,0.05)'
+              }}
+              transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+              className="w-12 h-12 rounded-lg flex items-center justify-center border border-secondary/10"
+            >
+              <Zap size={16} className={i % 2 === 0 ? "text-secondary" : "text-secondary/20"} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    )
+  },
+  { 
+    num: '03', 
+    title: 'Optimize',   
+    desc: 'Algorithms minimize fuel by recalculating paths with live traffic data.',                
+    icon: Route,       
+    color: '#FF8842',
+    viz: (
+      <div className="w-full flex justify-center">
+        <div className="scale-90 md:scale-100 origin-center bg-white/40 backdrop-blur-xl p-6 rounded-[2.5rem] border border-white/40 shadow-2xl">
+          <LiveActivityShowcase />
+        </div>
+      </div>
+    )
+  },
+  { 
+    num: '04', 
+    title: 'Act',        
+    desc: 'Closed-loop verification ensures zero missed pickups with GPS evidence.',                
+    icon: ShieldCheck, 
+    color: '#00C16A',
+    viz: (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="absolute inset-0 bg-success/5 rounded-full blur-3xl" />
+        <motion.div 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="relative"
+        >
+          <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center">
+            <Truck size={36} className="text-success" />
+          </div>
+          <motion.div 
+            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 rounded-full border-4 border-success/30"
+          />
+        </motion.div>
+      </div>
+    )
+  },
 ];
 
 /* ─── Scroll-linked number counter ───────────────────────── */
@@ -126,13 +223,20 @@ export default function LandingPage() {
 
   /* scroll values for horizontal scroll section */
   const { scrollYProgress: hScrollProgress } = useScroll({ target: hScrollRef, offset: ['start start', 'end end'] });
-  const hX = useTransform(hScrollProgress, [0, 1], ['0%', '-66.66%']); // 6 cards → show ~2 at a time, scroll through rest
+  const hX = useTransform(hScrollProgress, [0, 1], ['0%', '-70%']); // Adjusted for tighter scrolling
 
   /* scroll values for lifecycle reveal */
   const { scrollYProgress: lcProgress } = useScroll({ target: lifecycleRef, offset: ['start start', 'end end'] });
-  const activeStep = useTransform(lcProgress, [0, 0.25, 0.5, 0.75, 1], [0, 1, 2, 3, 3]);
+  const activeStep = useTransform(lcProgress, [0, 0.2, 0.4, 0.6, 0.8], [0, 1, 2, 3, 3]);
   const [currentStep, setCurrentStep] = useState(0);
   useMotionValueEvent(activeStep, 'change', (v) => setCurrentStep(Math.round(v)));
+
+  // Dynamic theme transforms for Lifecycle
+  const lcBg = useTransform(lcProgress, [0.2, 0.5], ['#0d1117', '#ffffff']);
+  const lcHeading = useTransform(lcProgress, [0.2, 0.5], ['#ffffff', '#171C1F']);
+  const lcSub = useTransform(lcProgress, [0.2, 0.5], ['rgba(255,255,255,0.6)', '#3F4948']);
+  const lcDotBorder = useTransform(lcProgress, [0.2, 0.5], ['rgba(255,255,255,0.05)', 'rgba(0,0,0,0.08)']);
+  const lcHint = useTransform(lcProgress, [0.2, 0.5], ['rgba(255,255,255,0.2)', 'rgba(0,0,0,0.3)']);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -429,7 +533,7 @@ export default function LandingPage() {
             §2  SCROLL-LINKED STATS — sticky dark section
                 Tall container, numbers animate on scroll
            ════════════════════════════════════════════════════ */}
-        <section ref={statsRef} className="relative" style={{ zIndex: 2, height: '200vh' }}>
+        <section ref={statsRef} className="relative" style={{ zIndex: 2, height: '120vh' }}>
           <div
             className="sticky top-0 h-screen flex items-center justify-center overflow-hidden"
             style={{ background: 'linear-gradient(145deg, #0d1117, #161b22)' }}
@@ -440,7 +544,7 @@ export default function LandingPage() {
 
             <div className="max-w-[1100px] mx-auto px-6 md:px-10 w-full">
               <FadeUp>
-                <div className="text-center mb-14">
+                <div className="text-center mb-8">
                   <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-bold uppercase mb-4" style={{ background: 'rgba(0,193,106,0.12)', color: '#00C16A', fontFamily: 'var(--font-mono)', letterSpacing: '0.15em' }}>
                     Impact Dashboard
                   </span>
@@ -458,7 +562,7 @@ export default function LandingPage() {
               </div>
 
               {/* Sub detail */}
-              <div className="flex justify-center gap-8 mt-10 flex-wrap">
+              <div className="flex justify-center gap-8 mt-6 flex-wrap">
                 {['Real-time telemetry', 'Edge computing', '24 active zones', 'Zero downtime'].map((t) => (
                   <span key={t} className="flex items-center gap-2 text-[10px] uppercase font-bold" style={{ letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)' }}>
                     <span className="w-1 h-1 rounded-full" style={{ background: '#00C16A' }} />
@@ -477,10 +581,10 @@ export default function LandingPage() {
           ref={hScrollRef}
           id="platform"
           className="relative"
-          style={{ zIndex: 3, height: '300vh' }}
+          style={{ zIndex: 3, height: '180vh' }}
         >
           <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden" style={{ background: 'var(--surface)' }}>
-            <div className="px-6 md:px-10 max-w-[1400px] mx-auto w-full mb-8">
+            <div className="px-6 md:px-10 max-w-[1400px] mx-auto w-full mb-4">
               <SlideIn from="left">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,193,106,0.1)' }}>
@@ -504,21 +608,21 @@ export default function LandingPage() {
                   return (
                     <div
                       key={mod.title}
-                      className="w-[300px] md:w-[360px] flex-shrink-0 p-7 rounded-2xl group transition-all duration-300 hover:-translate-y-1.5"
+                      className="w-[280px] md:w-[360px] flex-shrink-0 p-6 md:p-7 rounded-2xl group transition-all duration-300 hover:-translate-y-1.5"
                       style={{ background: mod.bg, boxShadow: 'var(--shadow-sm)', border: '1px solid rgba(0,0,0,0.02)' }}
                       onMouseEnter={(e) => { (e.currentTarget.style.boxShadow = 'var(--shadow-md)'); }}
                       onMouseLeave={(e) => { (e.currentTarget.style.boxShadow = 'var(--shadow-sm)'); }}
                     >
                       <div className="flex justify-between items-start mb-5">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: `${mod.color}14` }}>
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: `${mod.color}14` }}>
                           <Icon size={20} style={{ color: mod.color }} />
                         </div>
                         <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] font-bold uppercase" style={{ background: `${mod.color}10`, color: mod.color }}>
                           <span className="w-1 h-1 rounded-full animate-pulse" style={{ background: mod.color }} /> Active
                         </span>
                       </div>
-                      <h3 className="text-base font-bold mb-1.5" style={{ fontFamily: 'var(--font-display)' }}>{mod.title}</h3>
-                      <p className="text-xs leading-relaxed opacity-70" style={{ color: 'var(--on-surface-variant)' }}>{mod.desc}</p>
+                      <h3 className="text-sm md:text-base font-bold mb-1.5" style={{ fontFamily: 'var(--font-display)' }}>{mod.title}</h3>
+                      <p className="text-[11px] md:text-xs leading-relaxed opacity-70" style={{ color: 'var(--on-surface-variant)' }}>{mod.desc}</p>
                       <div className="mt-5 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: mod.color }}>
                         Learn more <ArrowRight size={10} />
                       </div>
@@ -528,23 +632,6 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* Scroll progress dots */}
-            <div className="flex justify-center gap-1.5 mt-6">
-              {modules.map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="h-1.5 rounded-full"
-                  style={{
-                    width: i === 0 ? 24 : 8,
-                    background: i === 0 ? 'var(--primary)' : 'var(--outline-variant)',
-                  }}
-                  animate={{
-                    width: i === Math.round(hScrollProgress.get() * (modules.length - 1)) ? 24 : 8,
-                    background: i === Math.round(hScrollProgress.get() * (modules.length - 1)) ? 'var(--primary)' : 'var(--outline-variant)',
-                  }}
-                />
-              ))}
-            </div>
           </div>
         </section>
 
@@ -624,21 +711,34 @@ export default function LandingPage() {
           ref={lifecycleRef}
           id="solutions"
           className="relative"
-          style={{ zIndex: 5, height: '400vh' }}
+          style={{ zIndex: 5, height: '280vh' }}
         >
-          <div
+          <motion.div
             className="sticky top-0 h-screen flex items-center overflow-hidden"
-            style={{ background: 'linear-gradient(145deg, #0d1117, #1a1f2b)' }}
+            style={{ background: lcBg }}
           >
-            <div className="max-w-[1200px] mx-auto px-6 md:px-10 w-full">
-              <div className="text-center mb-10">
-                <span className="inline-block px-3 py-1 rounded-full text-[9px] font-bold uppercase mb-2 opacity-60 tracking-[0.2em]" style={{ background: 'rgba(0,193,106,0.1)', color: '#00C16A', fontFamily: 'var(--font-mono)' }}>How it works</span>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(20px, 3vw, 32px)', color: 'white', letterSpacing: '-0.02em' }}>
+            <div className="max-w-[1400px] mx-auto px-6 md:px-10 w-full overflow-y-auto max-h-screen py-10 md:py-0">
+              <div className="text-center mb-8 md:mb-16">
+                <motion.span 
+                  style={{ color: '#00C16A', background: 'rgba(0,193,106,0.1)' }}
+                  className="inline-block px-3 py-1 rounded-full text-[9px] font-bold uppercase mb-2 tracking-[0.2em]"
+                >
+                  How it works
+                </motion.span>
+                <motion.h2 
+                  style={{ 
+                    fontFamily: 'var(--font-display)', 
+                    fontWeight: 800, 
+                    fontSize: 'clamp(24px, 4vw, 42px)', 
+                    color: lcHeading, 
+                    letterSpacing: '-0.02em' 
+                  }}
+                >
                   The WasteIQ Lifecycle
-                </h2>
+                </motion.h2>
               </div>
 
-              <div className="flex flex-col lg:flex-row gap-12 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1.4fr] gap-6 md:gap-20 items-center">
                 {/* Left: step indicator dots */}
                 <div className="hidden lg:flex flex-col items-center gap-0">
                   {steps.map((step, i) => {
@@ -648,17 +748,21 @@ export default function LandingPage() {
                         <motion.div
                           animate={{
                             scale: currentStep === i ? 1.2 : 1,
-                            background: isActive ? step.color : 'rgba(255,255,255,0.05)',
+                            background: isActive ? step.color : 'transparent',
                           }}
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
-                          style={{ color: isActive ? 'white' : 'rgba(255,255,255,0.2)', border: `1.5px solid ${isActive ? step.color : 'rgba(255,255,255,0.05)'}`, transition: 'border-color 0.5s' }}
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-[11px] font-black"
+                          style={{ 
+                            color: isActive ? 'white' : 'rgba(128,128,128,0.4)', 
+                            border: `2px solid ${isActive ? step.color : 'rgba(128,128,128,0.2)'}`,
+                            transition: 'border-color 0.5s' 
+                          }}
                         >
                           {step.num}
                         </motion.div>
                         {i < steps.length - 1 && (
                           <motion.div
-                            className="w-[1.5px] h-8"
-                            animate={{ background: currentStep > i ? 'rgba(0,193,106,0.4)' : 'rgba(255,255,255,0.04)' }}
+                            className="w-[2px] h-10"
+                            animate={{ background: currentStep > i ? 'rgba(0,193,106,0.4)' : 'rgba(128,128,128,0.1)' }}
                             transition={{ duration: 0.5 }}
                           />
                         )}
@@ -667,50 +771,88 @@ export default function LandingPage() {
                   })}
                 </div>
 
-                {/* Right: content that transitions */}
-                <div className="flex-1 relative" style={{ minHeight: '280px' }}>
-                  {steps.map((step, i) => {
-                    const StepIcon = step.icon;
-                    return (
-                      <motion.div
-                        key={step.num}
-                        className="absolute inset-0 flex flex-col justify-center"
-                        initial={false}
-                        animate={{
-                          opacity: currentStep === i ? 1 : 0,
-                          y: currentStep === i ? 0 : currentStep > i ? -40 : 40,
-                          scale: currentStep === i ? 1 : 0.95,
-                        }}
-                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ pointerEvents: currentStep === i ? 'auto' : 'none' }}
-                      >
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: `${step.color}15` }}>
-                            <StepIcon size={24} color={step.color} />
+                {/* Middle: text content */}
+                <div className="relative" style={{ minHeight: 'auto' }}>
+                  <AnimatePresence mode="wait">
+                    {steps.map((step, i) => (
+                      currentStep === i && (
+                        <motion.div
+                          key={step.num}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={{ duration: 0.5, ease: 'circOut' }}
+                          className="flex flex-col justify-center"
+                        >
+                          <div className="flex items-center gap-4 mb-4 md:mb-6">
+                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl flex items-center justify-center shadow-inner" style={{ background: `${step.color}15` }}>
+                              <step.icon size={24} />
+                            </div>
+                            <div>
+                              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: step.color }}>Step {step.num}</span>
+                              <motion.h3 
+                                style={{ fontFamily: 'var(--font-display)', color: lcHeading }}
+                                className="text-2xl md:text-3xl font-black tracking-tight"
+                              >
+                                {step.title}
+                              </motion.h3>
+                            </div>
                           </div>
-                          <div>
-                            <span className="text-[9px] font-bold uppercase tracking-widest opacity-60" style={{ color: step.color, fontFamily: 'var(--font-mono)' }}>Step {step.num}</span>
-                            <h3 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'white' }}>{step.title}</h3>
+                          <motion.p 
+                            style={{ color: lcSub }}
+                            className="text-sm md:text-base leading-relaxed max-w-md font-medium"
+                          >
+                            {step.desc}
+                          </motion.p>
+                          
+                          <div className="mt-6 md:mt-8 flex items-center gap-3">
+                            <div className="flex -space-x-2">
+                              {[1,2,3].map(j => (
+                                <div key={j} className="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white bg-surface-high flex items-center justify-center text-[8px] md:text-[10px] font-bold">
+                                  {j}
+                                </div>
+                              ))}
+                            </div>
+                            <span className="text-[9px] md:text-[10px] font-bold uppercase opacity-40 tracking-wider">Automated Processing</span>
                           </div>
-                        </div>
-                        <p className="text-sm leading-relaxed max-w-md opacity-60" style={{ color: 'white' }}>
-                          {step.desc}
-                        </p>
-                        {/* Note: User requested removal of redundant visual progress tracks below description */}
-                      </motion.div>
-                    );
-                  })}
+                        </motion.div>
+                      )
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Right: Visualization Slot */}
+                <div className="relative h-[240px] md:h-[400px] w-full">
+                  <AnimatePresence mode="wait">
+                    {steps.map((step, i) => (
+                      currentStep === i && (
+                        <motion.div
+                          key={`viz-${step.num}`}
+                          initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+                          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                          exit={{ opacity: 0, scale: 1.1, filter: 'blur(20px)' }}
+                          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          {(step as any).viz}
+                        </motion.div>
+                      )
+                    ))}
+                  </AnimatePresence>
                 </div>
               </div>
 
               {/* Scroll hint */}
-              <div className="text-center mt-10">
-                <span className="text-[9px] uppercase font-bold" style={{ color: 'rgba(255,255,255,0.2)', letterSpacing: '0.15em', fontFamily: 'var(--font-mono)' }}>
+              <div className="text-center mt-20">
+                <motion.span 
+                  style={{ color: lcHint }}
+                  className="text-[10px] uppercase font-black tracking-[0.3em] font-mono"
+                >
                   Keep scrolling to advance steps
-                </span>
+                </motion.span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
         {/* ════════════════════════════════════════════════════
@@ -792,7 +934,7 @@ export default function LandingPage() {
         <section className="section-padding relative" style={{ zIndex: 7, background: 'var(--surface-lowest)' }}>
           <div className="max-container">
             <SlideIn from="left">
-              <div className="card p-10 md:p-14 mx-auto relative overflow-hidden" style={{ maxWidth: '760px', borderRadius: 'var(--radius-xl)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.06)' }}>
+              <div className="card p-6 md:p-14 mx-auto relative overflow-hidden" style={{ maxWidth: '760px', borderRadius: 'var(--radius-xl)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.06)' }}>
                 <div className="absolute top-0 right-0 w-64 h-64 rounded-full -mr-32 -mt-32" style={{ background: 'rgba(0,193,106,0.04)', filter: 'blur(100px)' }} aria-hidden="true" />
                 <div className="text-center mb-8 relative z-10">
                   <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-bold uppercase mb-5" style={{ background: 'rgba(0,109,57,0.06)', color: 'var(--primary)', fontFamily: 'var(--font-mono)', letterSpacing: '0.15em' }}>Citizen Action</span>
@@ -822,11 +964,11 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold uppercase mb-1.5" style={{ letterSpacing: '0.2em', color: 'var(--outline)' }}>Visual Evidence</label>
-                    <div className="flex flex-col items-center justify-center p-8 rounded-xl cursor-pointer transition-all" style={{ border: '2px dashed var(--outline-variant)' }}
+                    <div className="flex flex-col items-center justify-center p-6 md:p-8 rounded-xl cursor-pointer transition-all" style={{ border: '2px dashed var(--outline-variant)' }}
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'rgba(0,193,106,0.02)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--outline-variant)'; e.currentTarget.style.background = 'transparent'; }}>
                       <Camera size={32} className="mb-2" style={{ color: 'var(--outline-variant)' }} />
-                      <p className="title-sm" style={{ color: 'var(--on-surface-variant)' }}>Snap or drag photographic evidence</p>
+                      <p className="title-sm text-center" style={{ color: 'var(--on-surface-variant)' }}>Snap or drag photographic evidence</p>
                       <p className="body-sm mt-1" style={{ color: 'var(--outline)' }}>Max 10MB (JPG, PNG)</p>
                     </div>
                   </div>
