@@ -102,10 +102,10 @@ function ScrollCounter({ target, suffix = '', label }: { target: number; suffix?
 
   return (
     <div ref={ref} className="text-center">
-      <div className="font-bold" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(32px, 4vw, 64px)', letterSpacing: '-0.04em', background: 'linear-gradient(135deg, #00C16A, #39B8FD)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+      <div className="font-bold" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px, 3.5vw, 48px)', letterSpacing: '-0.05em', background: 'linear-gradient(135deg, #00C16A, #39B8FD)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
         {val.toLocaleString()}{suffix}
       </div>
-      <div className="text-xs font-bold uppercase mt-2" style={{ letterSpacing: '0.2em', color: 'rgba(255,255,255,0.5)' }}>{label}</div>
+      <div className="text-[10px] font-bold uppercase mt-1.5 opacity-60 tracking-[0.15em]">{label}</div>
     </div>
   );
 }
@@ -199,7 +199,7 @@ export default function LandingPage() {
 
           <ParticleField />
 
-          <div className="max-w-[1400px] mx-auto px-6 md:px-10 w-full relative z-10 pt-32 pb-20">
+          <div className="max-w-[1300px] mx-auto px-6 md:px-10 w-full relative z-10 pt-24 pb-16">
             <div className="flex flex-col lg:flex-row items-center gap-16">
               {/* LEFT – headline */}
               <motion.div
@@ -213,33 +213,33 @@ export default function LandingPage() {
                   initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   transition={{ delay: 0.2, duration: 0.8 }}
-                  className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-8"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6"
                   style={{
                     background: 'rgba(0,193,106,0.06)',
                     border: '1px solid rgba(0,193,106,0.1)',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
+                    fontSize: '9px',
                     fontWeight: 700,
                     color: 'var(--primary)',
-                    letterSpacing: '0.12em',
+                    letterSpacing: '0.1em',
                   }}
                 >
-                  <span className="relative w-2 h-2">
+                  <span className="relative w-1.5 h-1.5">
                     <span className="absolute inset-0 rounded-full animate-ping" style={{ background: 'var(--primary-container)', opacity: 0.6 }} />
                     <span className="absolute inset-0 rounded-full" style={{ background: 'var(--primary-container)' }} />
                   </span>
-                  MIRA-BHAYANDAR MUNICIPAL CORP — POWERED BY AI
+                  MIRA-BHAYANDAR — POWERED BY AI
                 </motion.span>
 
                 {/* Headline — Staggered word reveal */}
-                <div className="mb-6" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(44px, 6vw, 80px)', letterSpacing: '-0.05em', lineHeight: 0.95 }}>
+                <div className="mb-5" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(36px, 5.5vw, 68px)', letterSpacing: '-0.06em', lineHeight: 0.9 }}>
                   {['Smart', 'Waste.'].map((word, i) => (
                     <motion.span
                       key={word}
-                      className="inline-block mr-4"
-                      initial={{ opacity: 0, y: 60, rotateX: -40 }}
+                      className="inline-block mr-3"
+                      initial={{ opacity: 0, y: 40, rotateX: -30 }}
                       animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                      transition={{ delay: 0.3 + i * 0.12, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
                     >
                       {word}
                     </motion.span>
@@ -248,10 +248,10 @@ export default function LandingPage() {
                   {['Smarter', 'City.'].map((word, i) => (
                     <motion.span
                       key={word}
-                      className="inline-block mr-4 animate-text-shimmer"
-                      initial={{ opacity: 0, y: 60, rotateX: -40 }}
+                      className="inline-block mr-3 animate-text-shimmer"
+                      initial={{ opacity: 0, y: 40, rotateX: -30 }}
                       animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                      transition={{ delay: 0.55 + i * 0.12, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ delay: 0.5 + i * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
                       style={{
                         background: 'linear-gradient(135deg, var(--primary-container), var(--secondary-container), var(--primary-container))',
                         backgroundSize: '200% auto',
@@ -266,16 +266,15 @@ export default function LandingPage() {
 
                 {/* Sub */}
                 <motion.p
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.8 }}
-                  className="mb-10"
-                  style={{ fontSize: '16px', lineHeight: 1.8, color: 'var(--on-surface-variant)', maxWidth: '520px' }}
+                  transition={{ delay: 0.65, duration: 0.8 }}
+                  className="mb-8"
+                  style={{ fontSize: '15px', lineHeight: 1.7, color: 'var(--on-surface-variant)', maxWidth: '480px' }}
                 >
                   Next-gen municipal infrastructure merging{' '}
-                  <strong style={{ color: 'var(--primary)' }}>AI prediction</strong>,{' '}
-                  <strong style={{ color: 'var(--secondary)' }}>real-time IoT telemetry</strong>{' '}
-                  &amp; route intelligence across 24 operational zones.
+                  <strong style={{ color: 'var(--primary)' }}>AI prediction</strong>{' '}
+                  &amp; route intelligence across 24 zones.
                 </motion.p>
 
                 {/* CTAs */}
@@ -287,30 +286,29 @@ export default function LandingPage() {
                 >
                   <a
                     href="#sensors"
-                    className="group flex items-center gap-3 px-7 py-4 rounded-2xl no-underline text-sm font-bold transition-all duration-300"
+                    className="group flex items-center gap-3 px-6 py-3.5 rounded-xl no-underline text-xs font-bold transition-all duration-300"
                     style={{
                       background: 'var(--primary)',
                       color: 'white',
-                      boxShadow: '0 8px 32px rgba(0,109,57,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
+                      boxShadow: '0 6px 24px rgba(0,109,57,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,109,57,0.4)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,109,57,0.3)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(0,109,57,0.3)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,109,57,0.2)'; }}
                   >
-                    <Map size={18} /> Explore City Map
-                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    <Map size={16} /> Explore City Map
+                    <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                   </a>
                   <a
                     href="#analytics"
-                    className="flex items-center gap-2 px-7 py-4 rounded-2xl no-underline text-sm font-semibold transition-all duration-300"
+                    className="flex items-center gap-2 px-6 py-3.5 rounded-xl no-underline text-xs font-semibold transition-all duration-300"
                     style={{
                       color: 'var(--on-surface)',
-                      background: 'rgba(255,255,255,0.6)',
-                      backdropFilter: 'blur(12px)',
-                      border: '1px solid rgba(0,0,0,0.06)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                      background: 'rgba(255,255,255,0.4)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(0,0,0,0.04)',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.9)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.4)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
                     View Metrics
                   </a>
@@ -352,12 +350,12 @@ export default function LandingPage() {
                   transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                 >
                   <div
-                    className="p-8 rounded-[2.5rem] relative overflow-hidden"
+                    className="p-6 rounded-[2rem] relative overflow-hidden"
                     style={{ 
-                      background: 'rgba(255, 255, 255, 0.75)', 
-                      backdropFilter: 'blur(40px) saturate(200%)', 
-                      boxShadow: '0 60px 120px -30px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6)',
-                      border: '1px solid rgba(255,255,255,0.5)',
+                      background: 'rgba(255, 255, 255, 0.7)', 
+                      backdropFilter: 'blur(30px) saturate(160%)', 
+                      boxShadow: '0 40px 80px -20px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,0.5)',
+                      border: '1px solid rgba(255,255,255,0.4)',
                     }}
                   >
                     {/* Multi-color glow accents */}
@@ -369,23 +367,23 @@ export default function LandingPage() {
 
                   {/* Floating accent card — bottom-right */}
                   <motion.div
-                    className="absolute -bottom-6 -right-6 px-5 py-3.5 rounded-2xl flex items-center gap-3 z-20"
-                    initial={{ opacity: 0, y: 20 }}
+                    className="absolute -bottom-4 -right-4 px-4 py-3 rounded-xl flex items-center gap-3 z-20"
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.4 }}
                     style={{
                       background: 'rgba(255,255,255,0.9)',
                       backdropFilter: 'blur(20px)',
-                      boxShadow: '0 16px 48px rgba(0,0,0,0.1)',
-                      border: '1px solid rgba(0,193,106,0.1)',
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.08)',
+                      border: '1px solid rgba(0,193,106,0.08)',
                     }}
                   >
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(0,193,106,0.1)' }}>
-                      <Signal size={18} style={{ color: 'var(--primary)' }} />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,193,106,0.1)' }}>
+                      <Signal size={14} style={{ color: 'var(--primary)' }} />
                     </div>
                     <div>
-                      <div className="text-[9px] font-bold uppercase" style={{ color: 'var(--outline)', letterSpacing: '0.1em' }}>System Latency</div>
-                      <div className="text-lg font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--primary)' }}>14ms</div>
+                      <div className="text-[8px] font-bold uppercase opacity-60 tracking-wider">System Latency</div>
+                      <div className="text-base font-black" style={{ fontFamily: 'var(--font-display)', color: 'var(--primary)', lineHeight: 1 }}>14ms</div>
                     </div>
                   </motion.div>
 
@@ -446,13 +444,13 @@ export default function LandingPage() {
                   <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-bold uppercase mb-4" style={{ background: 'rgba(0,193,106,0.12)', color: '#00C16A', fontFamily: 'var(--font-mono)', letterSpacing: '0.15em' }}>
                     Impact Dashboard
                   </span>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(28px, 4.5vw, 48px)', color: 'white', letterSpacing: '-0.03em' }}>
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(24px, 4vw, 40px)', color: 'white', letterSpacing: '-0.04em' }}>
                     Numbers that move cities
                   </h2>
                 </div>
               </FadeUp>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                 <ScrollCounter target={94.2} suffix="%" label="Collection Rate" />
                 <ScrollCounter target={12480} label="kg Carbon Offset" />
                 <ScrollCounter target={1242} label="Active Sensors" />
@@ -506,23 +504,23 @@ export default function LandingPage() {
                   return (
                     <div
                       key={mod.title}
-                      className="w-[340px] md:w-[400px] flex-shrink-0 p-8 rounded-2xl group transition-all duration-300 hover:-translate-y-2"
-                      style={{ background: mod.bg, boxShadow: 'var(--shadow-md)', border: '1px solid rgba(0,0,0,0.03)' }}
-                      onMouseEnter={(e) => { (e.currentTarget.style.boxShadow = 'var(--shadow-xl)'); }}
-                      onMouseLeave={(e) => { (e.currentTarget.style.boxShadow = 'var(--shadow-md)'); }}
+                      className="w-[300px] md:w-[360px] flex-shrink-0 p-7 rounded-2xl group transition-all duration-300 hover:-translate-y-1.5"
+                      style={{ background: mod.bg, boxShadow: 'var(--shadow-sm)', border: '1px solid rgba(0,0,0,0.02)' }}
+                      onMouseEnter={(e) => { (e.currentTarget.style.boxShadow = 'var(--shadow-md)'); }}
+                      onMouseLeave={(e) => { (e.currentTarget.style.boxShadow = 'var(--shadow-sm)'); }}
                     >
-                      <div className="flex justify-between items-start mb-6">
-                        <div className="w-14 h-14 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110" style={{ background: `${mod.color}18` }}>
-                          <Icon size={24} style={{ color: mod.color }} />
+                      <div className="flex justify-between items-start mb-5">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105" style={{ background: `${mod.color}14` }}>
+                          <Icon size={20} style={{ color: mod.color }} />
                         </div>
-                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[8px] font-bold uppercase" style={{ background: `${mod.color}12`, color: mod.color }}>
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[7px] font-bold uppercase" style={{ background: `${mod.color}10`, color: mod.color }}>
                           <span className="w-1 h-1 rounded-full animate-pulse" style={{ background: mod.color }} /> Active
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>{mod.title}</h3>
-                      <p className="text-sm leading-relaxed" style={{ color: 'var(--on-surface-variant)' }}>{mod.desc}</p>
-                      <div className="mt-6 flex items-center gap-1 text-xs font-semibold" style={{ color: mod.color }}>
-                        Learn more <ArrowRight size={12} />
+                      <h3 className="text-base font-bold mb-1.5" style={{ fontFamily: 'var(--font-display)' }}>{mod.title}</h3>
+                      <p className="text-xs leading-relaxed opacity-70" style={{ color: 'var(--on-surface-variant)' }}>{mod.desc}</p>
+                      <div className="mt-5 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider" style={{ color: mod.color }}>
+                        Learn more <ArrowRight size={10} />
                       </div>
                     </div>
                   );
@@ -577,26 +575,26 @@ export default function LandingPage() {
 
               <div className="lg:w-1/3 flex flex-col gap-4">
                 <SlideIn from="right">
-                  <div className="card card-interactive p-6" style={{ borderLeft: '3px solid var(--primary-container)' }}>
-                    <div className="text-[10px] font-bold uppercase mb-3" style={{ letterSpacing: '0.15em', color: 'var(--outline)' }}>Zone Efficiency</div>
+                  <div className="card card-interactive p-5" style={{ borderLeft: '3px solid var(--primary-container)' }}>
+                    <div className="text-[9px] font-bold uppercase mb-2 opacity-60 tracking-wider">Zone Efficiency</div>
                     <div className="flex items-end justify-between mb-3">
-                      <div className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--primary)' }}><CountUp end={94.2} decimals={1} suffix="%" /></div>
-                      <span className="chip chip-success text-[10px]">+2.1%</span>
+                      <div className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--primary)' }}><CountUp end={94.2} decimals={1} suffix="%" /></div>
+                      <span className="chip chip-success text-[9px] px-2 py-0.5">+2.1%</span>
                     </div>
-                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-high)' }}>
+                    <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'var(--surface-high)' }}>
                       <motion.div initial={{ width: 0 }} whileInView={{ width: '94.2%' }} viewport={{ once: true }} transition={{ duration: 1.5 }} className="h-full rounded-full" style={{ background: 'linear-gradient(90deg, var(--primary), var(--primary-container))' }} />
                     </div>
                   </div>
                 </SlideIn>
 
                 <SlideIn from="right" delay={0.1}>
-                  <div className="card card-interactive p-6" style={{ borderLeft: '3px solid var(--secondary-container)' }}>
-                    <div className="text-[10px] font-bold uppercase mb-3" style={{ letterSpacing: '0.15em', color: 'var(--outline)' }}>Carbon Offset</div>
+                  <div className="card card-interactive p-5" style={{ borderLeft: '3px solid var(--secondary-container)' }}>
+                    <div className="text-[9px] font-bold uppercase mb-2 opacity-60 tracking-wider">Carbon Offset</div>
                     <div className="flex items-end justify-between mb-3">
-                      <div className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--secondary)' }}><CountUp end={12480} suffix="kg" /></div>
-                      <span className="chip chip-info text-[10px]">Live</span>
+                      <div className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--secondary)' }}><CountUp end={12480} suffix="kg" /></div>
+                      <span className="chip chip-info text-[9px] px-2 py-0.5">Live</span>
                     </div>
-                    <div className="flex gap-0.5 h-6 items-end">
+                    <div className="flex gap-0.5 h-4 items-end">
                       {[40, 60, 55, 80, 75, 90, 100].map((h, j) => (
                         <motion.div key={j} className="flex-1 rounded-sm" initial={{ height: 0 }} whileInView={{ height: `${h}%` }} viewport={{ once: true }} transition={{ duration: 0.8, delay: j * 0.05 }} style={{ background: `rgba(57,184,253,${0.3 + j * 0.1})` }} />
                       ))}
@@ -605,13 +603,13 @@ export default function LandingPage() {
                 </SlideIn>
 
                 <SlideIn from="right" delay={0.2}>
-                  <div className="card card-interactive p-6" style={{ borderLeft: '3px solid var(--tertiary-container)' }}>
-                    <div className="text-[10px] font-bold uppercase mb-3" style={{ letterSpacing: '0.15em', color: 'var(--outline)' }}>System Uptime</div>
+                  <div className="card card-interactive p-5" style={{ borderLeft: '3px solid var(--tertiary-container)' }}>
+                    <div className="text-[9px] font-bold uppercase mb-2 opacity-60 tracking-wider">System Uptime</div>
                     <div className="flex items-end justify-between mb-1">
-                      <div className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--tertiary)' }}>99.97<span className="text-lg">%</span></div>
-                      <Activity size={16} style={{ color: 'var(--tertiary)' }} />
+                      <div className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--tertiary)' }}>99.97<span className="text-base">%</span></div>
+                      <Activity size={14} style={{ color: 'var(--tertiary)' }} />
                     </div>
-                    <p className="text-[10px]" style={{ color: 'var(--outline)' }}>Last 30-day rolling average</p>
+                    <p className="text-[9px] opacity-60">30-day rolling average</p>
                   </div>
                 </SlideIn>
               </div>
@@ -633,9 +631,9 @@ export default function LandingPage() {
             style={{ background: 'linear-gradient(145deg, #0d1117, #1a1f2b)' }}
           >
             <div className="max-w-[1200px] mx-auto px-6 md:px-10 w-full">
-              <div className="text-center mb-12">
-                <span className="inline-block px-4 py-1.5 rounded-full text-[10px] font-bold uppercase mb-3" style={{ background: 'rgba(0,193,106,0.12)', color: '#00C16A', fontFamily: 'var(--font-mono)', letterSpacing: '0.15em' }}>How it works</span>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(24px, 3.5vw, 40px)', color: 'white', letterSpacing: '-0.02em' }}>
+              <div className="text-center mb-10">
+                <span className="inline-block px-3 py-1 rounded-full text-[9px] font-bold uppercase mb-2 opacity-60 tracking-[0.2em]" style={{ background: 'rgba(0,193,106,0.1)', color: '#00C16A', fontFamily: 'var(--font-mono)' }}>How it works</span>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(20px, 3vw, 32px)', color: 'white', letterSpacing: '-0.02em' }}>
                   The WasteIQ Lifecycle
                 </h2>
               </div>
@@ -649,18 +647,18 @@ export default function LandingPage() {
                       <div key={step.num} className="flex flex-col items-center">
                         <motion.div
                           animate={{
-                            scale: currentStep === i ? 1.3 : 1,
-                            background: isActive ? step.color : 'rgba(255,255,255,0.1)',
+                            scale: currentStep === i ? 1.2 : 1,
+                            background: isActive ? step.color : 'rgba(255,255,255,0.05)',
                           }}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold"
-                          style={{ color: isActive ? 'white' : 'rgba(255,255,255,0.3)', border: `2px solid ${isActive ? step.color : 'rgba(255,255,255,0.08)'}`, transition: 'border-color 0.5s' }}
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold"
+                          style={{ color: isActive ? 'white' : 'rgba(255,255,255,0.2)', border: `1.5px solid ${isActive ? step.color : 'rgba(255,255,255,0.05)'}`, transition: 'border-color 0.5s' }}
                         >
                           {step.num}
                         </motion.div>
                         {i < steps.length - 1 && (
                           <motion.div
-                            className="w-0.5 h-12"
-                            animate={{ background: currentStep > i ? 'rgba(0,193,106,0.5)' : 'rgba(255,255,255,0.06)' }}
+                            className="w-[1.5px] h-8"
+                            animate={{ background: currentStep > i ? 'rgba(0,193,106,0.4)' : 'rgba(255,255,255,0.04)' }}
                             transition={{ duration: 0.5 }}
                           />
                         )}
@@ -687,15 +685,15 @@ export default function LandingPage() {
                         style={{ pointerEvents: currentStep === i ? 'auto' : 'none' }}
                       >
                         <div className="flex items-center gap-4 mb-4">
-                          <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: `${step.color}20` }}>
-                            <StepIcon size={28} color={step.color} />
+                          <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: `${step.color}15` }}>
+                            <StepIcon size={24} color={step.color} />
                           </div>
                           <div>
-                            <span className="text-[10px] font-bold uppercase" style={{ letterSpacing: '0.15em', color: step.color, fontFamily: 'var(--font-mono)' }}>Step {step.num}</span>
-                            <h3 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'white' }}>{step.title}</h3>
+                            <span className="text-[9px] font-bold uppercase tracking-widest opacity-60" style={{ color: step.color, fontFamily: 'var(--font-mono)' }}>Step {step.num}</span>
+                            <h3 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'white' }}>{step.title}</h3>
                           </div>
                         </div>
-                        <p className="text-base leading-relaxed max-w-lg" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                        <p className="text-sm leading-relaxed max-w-md opacity-60" style={{ color: 'white' }}>
                           {step.desc}
                         </p>
                         {/* Note: User requested removal of redundant visual progress tracks below description */}
@@ -727,58 +725,58 @@ export default function LandingPage() {
               </div>
             </FadeUp>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <SlideIn from="left">
-                <div className="card p-8 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300" style={{ borderTop: '3px solid var(--primary-container)' }}>
-                  <div className="relative w-28 h-28 mb-5">
+                <div className="card p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300" style={{ borderTop: '2px solid var(--primary-container)' }}>
+                  <div className="relative w-24 h-24 mb-4">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--surface-high)" strokeWidth="8" />
-                      <motion.circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--primary-container)" strokeWidth="8" strokeDasharray="251.2" initial={{ strokeDashoffset: 251.2 }} whileInView={{ strokeDashoffset: 62.8 }} viewport={{ once: true }} transition={{ duration: 1.5 }} strokeLinecap="round" />
+                      <circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--surface-high)" strokeWidth="6" />
+                      <motion.circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--primary-container)" strokeWidth="6" strokeDasharray="263.8" initial={{ strokeDashoffset: 263.8 }} whileInView={{ strokeDashoffset: 65.9 }} viewport={{ once: true }} transition={{ duration: 1.5 }} strokeLinecap="round" />
                     </svg>
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}><CountUp end={75} suffix="%" /></div>
+                    <div className="absolute inset-0 flex items-center justify-center text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}><CountUp end={75} suffix="%" /></div>
                   </div>
-                  <span className="text-xs font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--primary)' }}>Diversion Rate</span>
+                  <span className="text-[10px] font-bold uppercase opacity-60 tracking-wider">Diversion Rate</span>
                 </div>
               </SlideIn>
 
               <FadeUp delay={0.1}>
-                <div className="card p-8 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300" style={{ borderTop: '3px solid var(--secondary)' }}>
-                  <div className="relative w-28 h-28 mb-5">
+                <div className="card p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300" style={{ borderTop: '2px solid var(--secondary)' }}>
+                  <div className="relative w-24 h-24 mb-4">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--surface-high)" strokeWidth="8" />
-                      <motion.circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--secondary)" strokeWidth="8" strokeDasharray="251.2" initial={{ strokeDashoffset: 251.2 }} whileInView={{ strokeDashoffset: 25.1 }} viewport={{ once: true }} transition={{ duration: 1.5, delay: 0.2 }} strokeLinecap="round" />
+                      <circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--surface-high)" strokeWidth="6" />
+                      <motion.circle cx="50" cy="50" r="42" fill="transparent" stroke="var(--secondary)" strokeWidth="6" strokeDasharray="263.8" initial={{ strokeDashoffset: 263.8 }} whileInView={{ strokeDashoffset: 26.4 }} viewport={{ once: true }} transition={{ duration: 1.5, delay: 0.2 }} strokeLinecap="round" />
                     </svg>
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}><CountUp end={90} suffix="%" /></div>
+                    <div className="absolute inset-0 flex items-center justify-center text-xl font-bold" style={{ fontFamily: 'var(--font-display)' }}><CountUp end={90} suffix="%" /></div>
                   </div>
-                  <span className="text-xs font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--secondary)' }}>Fleet Uptime</span>
+                  <span className="text-[10px] font-bold uppercase opacity-60 tracking-wider">Fleet Uptime</span>
                 </div>
               </FadeUp>
 
               <SlideIn from="right">
-                <div className="card p-8 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300" style={{ borderTop: '3px solid var(--tertiary)' }}>
-                  <div className="relative w-28 h-28 mb-5 flex items-center justify-center">
-                    <div className="absolute inset-0 rounded-full opacity-10 animate-pulse" style={{ background: 'var(--tertiary)' }} />
-                    <div className="text-4xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--tertiary)' }}><CountUp end={14} suffix="ms" /></div>
+                <div className="card p-6 flex flex-col items-center text-center hover:-translate-y-1 transition-transform duration-300" style={{ borderTop: '2px solid var(--tertiary)' }}>
+                  <div className="relative w-24 h-24 mb-4 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full opacity-5 animate-pulse" style={{ background: 'var(--tertiary)' }} />
+                    <div className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--tertiary)' }}><CountUp end={14} suffix="ms" /></div>
                   </div>
-                  <span className="text-xs font-bold uppercase" style={{ letterSpacing: '0.1em', color: 'var(--tertiary)' }}>System Latency</span>
+                  <span className="text-[10px] font-bold uppercase opacity-60 tracking-wider">System Latency</span>
                 </div>
               </SlideIn>
             </div>
 
             {/* Big recycled total */}
             <FadeUp delay={0.2}>
-              <div className="card p-10 relative overflow-hidden" style={{ background: 'linear-gradient(120deg, rgba(0,193,106,0.04), rgba(57,184,253,0.04), var(--surface-lowest))' }}>
+              <div className="card p-8 relative overflow-hidden" style={{ background: 'linear-gradient(120deg, rgba(0,193,106,0.03), rgba(57,184,253,0.03), var(--surface-lowest))' }}>
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end">
                   <div>
-                    <div className="text-[10px] font-bold uppercase mb-2" style={{ letterSpacing: '0.2em', color: 'var(--outline)' }}>Recycled Total This Year</div>
-                    <div className="text-5xl md:text-7xl font-bold mb-3" style={{ fontFamily: 'var(--font-display)', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    <div className="text-[9px] font-bold uppercase mb-1 opacity-50 tracking-[0.2em]">Recycled Total YTD</div>
+                    <div className="text-4xl md:text-5xl font-black mb-3 tracking-tighter" style={{ fontFamily: 'var(--font-display)', background: 'linear-gradient(135deg, var(--primary), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                       <CountUp end={452.8} decimals={1} /> Tons
                     </div>
-                    <span className="text-xs font-bold px-3 py-1.5 rounded-full" style={{ color: 'white', background: 'var(--primary)', boxShadow: '0 4px 14px rgba(0,193,106,0.3)' }}>↑ 14% since last quarter</span>
+                    <span className="text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider" style={{ color: 'white', background: 'var(--primary)' }}>↑ 14% Growth</span>
                   </div>
-                  <p className="body-sm max-w-[200px] text-right mt-6 md:mt-0" style={{ color: 'var(--on-surface-variant)' }}>Scaling down carbon emissions through optimal multi-stage separation.</p>
+                  <p className="text-[10px] max-w-[180px] md:text-right mt-6 md:mt-0 opacity-50 font-medium leading-relaxed">Scaling down carbon emissions through optimal multi-stage separation.</p>
                 </div>
-                <div className="h-24 w-full mt-6 flex items-end gap-1.5">
+                <div className="h-16 w-full mt-6 flex items-end gap-1 opacity-60">
                   {[30, 45, 50, 75, 66, 80, 100, 95, 110, 125, 120, 140].map((h, i) => (
                     <motion.div key={i} className="flex-1 rounded-t-sm" initial={{ height: 0 }} whileInView={{ height: `${(h / 140) * 100}%` }} viewport={{ once: true }} transition={{ duration: 0.8, delay: i * 0.04 }} style={{ background: `linear-gradient(to top, rgba(0,109,57,${0.1 + i * 0.04}), rgba(0,193,106,${0.2 + i * 0.04}))` }} />
                   ))}

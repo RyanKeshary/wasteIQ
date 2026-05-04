@@ -76,8 +76,8 @@ export default function Navbar() {
         <div
           className="relative mx-auto transition-all duration-500"
           style={{
-            maxWidth: scrolled ? '1400px' : '100%',
-            padding: scrolled ? '8px 24px' : '16px 32px',
+            maxWidth: scrolled ? '1300px' : '100%',
+            padding: scrolled ? '6px 20px' : '12px 24px',
           }}
         >
           <motion.div
@@ -91,9 +91,9 @@ export default function Navbar() {
               boxShadow: scrolled
                 ? '0 8px 32px rgba(0,109,57,0.06), 0 1px 0 rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6)'
                 : 'none',
-              borderRadius: scrolled ? '24px' : '0px',
-              padding: scrolled ? '4px 8px 4px 16px' : '0px',
-              border: scrolled ? '1px solid rgba(0,193,106,0.08)' : '1px solid transparent',
+              borderRadius: scrolled ? '20px' : '0px',
+              padding: scrolled ? '2px 6px 2px 14px' : '0px',
+              border: scrolled ? '1px solid rgba(0,193,106,0.06)' : '1px solid transparent',
             }}
           >
             {/* Logo — Animated brand identity */}
@@ -104,8 +104,8 @@ export default function Navbar() {
                   alt="WasteIQ Logo"
                   className="object-contain relative z-10"
                   animate={{
-                    width: scrolled ? 42 : 56,
-                    height: scrolled ? 42 : 56,
+                    width: scrolled ? 36 : 48,
+                    height: scrolled ? 36 : 48,
                   }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   style={{ filter: 'drop-shadow(0 4px 12px rgba(0,109,57,0.2))' }}
@@ -127,7 +127,7 @@ export default function Navbar() {
                     fontFamily: 'var(--font-display)',
                     color: 'var(--primary)',
                     letterSpacing: '-0.05em',
-                    fontSize: scrolled ? '18px' : '24px',
+                    fontSize: scrolled ? '16px' : '20px',
                     lineHeight: 1,
                   }}
                 >
@@ -138,7 +138,7 @@ export default function Navbar() {
                   className="overflow-hidden"
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '8px',
+                    fontSize: '7px',
                     fontWeight: 700,
                     color: 'var(--outline)',
                     letterSpacing: '0.25em',
@@ -155,9 +155,9 @@ export default function Navbar() {
               <div
                 className="flex items-center gap-0.5 px-1.5 py-1.5 rounded-full transition-all duration-500 relative"
                 style={{
-                  background: scrolled ? 'var(--surface-low)' : 'rgba(255,255,255,0.6)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(0,0,0,0.03)',
+                  background: scrolled ? 'var(--surface-low)' : 'rgba(255,255,255,0.4)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(0,0,0,0.02)',
                 }}
               >
                 {navLinks.map((link) => {
@@ -177,8 +177,8 @@ export default function Navbar() {
                       style={{
                         fontFamily: 'var(--font-body)',
                         color: isActive ? 'var(--primary)' : isHovered ? 'var(--on-surface)' : 'var(--on-surface-variant)',
-                        background: isActive ? 'rgba(0,193,106,0.1)' : 'transparent',
-                        letterSpacing: '0.02em',
+                        background: isActive ? 'rgba(0,193,106,0.08)' : 'transparent',
+                        letterSpacing: '0.01em',
                       }}
                     >
                       <LinkIcon size={12} style={{ opacity: isActive || isHovered ? 1 : 0.4, transition: 'opacity 0.3s' }} />
@@ -203,13 +203,13 @@ export default function Navbar() {
               <motion.div
                 className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
                 style={{
-                  background: 'rgba(0,193,106,0.06)',
-                  border: '1px solid rgba(0,193,106,0.1)',
+                  background: 'rgba(0,193,106,0.05)',
+                  border: '1px solid rgba(0,193,106,0.08)',
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '9px',
+                  fontSize: '8px',
                   fontWeight: 700,
                   color: 'var(--primary)',
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.1em',
                 }}
                 animate={{
                   boxShadow: ['0 0 0 0 rgba(0,193,106,0)', '0 0 0 6px rgba(0,193,106,0.08)', '0 0 0 0 rgba(0,193,106,0)'],
@@ -233,12 +233,12 @@ export default function Navbar() {
               {/* Get Started CTA — Animated gradient border */}
               <Link
                 href="/login"
-                className="hidden sm:flex items-center gap-2 no-underline text-xs font-black px-5 py-2.5 rounded-full transition-all duration-300 relative group overflow-hidden"
+                className="hidden sm:flex items-center gap-2 no-underline text-[10px] font-black px-4 py-2 rounded-full transition-all duration-300 relative group overflow-hidden"
                 style={{
                   background: 'var(--primary)',
                   color: 'white',
-                  boxShadow: '0 4px 16px rgba(0,109,57,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
-                  letterSpacing: '0.04em',
+                  boxShadow: '0 3px 12px rgba(0,109,57,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
+                  letterSpacing: '0.02em',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';

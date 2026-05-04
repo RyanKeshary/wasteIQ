@@ -36,42 +36,42 @@ export default function Footer() {
         {/* Brand Column — Wider */}
         <div className="md:col-span-4">
           <div className="flex items-center gap-3 mb-6">
-            <img src="/logo.png" alt="WasteIQ Logo" className="w-14 h-14 object-contain" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,193,106,0.3))' }} />
+            <img src="/logo.png" alt="WasteIQ Logo" className="w-10 h-10 object-contain" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,193,106,0.3))' }} />
             <div>
               <span
-                className="text-2xl font-black block"
+                className="text-xl font-black block"
                 style={{ fontFamily: 'var(--font-display)', color: 'var(--on-surface)', letterSpacing: '-0.04em' }}
               >
                 WasteIQ
               </span>
-              <span className="text-[8px] font-bold uppercase" style={{ letterSpacing: '0.2em', color: 'var(--outline)' }}>
+              <span className="text-[7px] font-bold uppercase" style={{ letterSpacing: '0.2em', color: 'var(--outline)' }}>
                 Civic Intelligence Platform
               </span>
             </div>
           </div>
-          <p className="body-sm mb-6" style={{ color: 'var(--on-surface-variant)', lineHeight: 1.8 }}>
+          <p className="text-[11px] mb-6 opacity-60" style={{ color: 'var(--on-surface-variant)', lineHeight: 1.6 }}>
             Mira-Bhayandar&apos;s digital backbone for sustainable waste management
-            and civic excellence. Empowering citizens through data-driven transparency.
+            and civic excellence. Empowering citizens through data.
           </p>
           
           {/* Social Icons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             {[Globe, Share2].map((Icon, i) => (
               <button
                 key={i}
-                className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300"
                 style={{
                   background: 'var(--surface-lowest)',
                   boxShadow: 'var(--shadow-sm)',
                   color: 'var(--outline)',
-                  border: '1px solid rgba(0,0,0,0.04)',
+                  border: '1px solid rgba(0,0,0,0.03)',
                   cursor: 'pointer',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,193,106,0.1)'; e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,193,106,0.08)'; e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-lowest)'; e.currentTarget.style.color = 'var(--outline)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 aria-label={i === 0 ? 'Website' : 'Share'}
               >
-                <Icon size={16} />
+                <Icon size={14} />
               </button>
             ))}
           </div>
@@ -108,19 +108,19 @@ export default function Footer() {
           >
             Platform
           </h4>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             {platformLinks.map((link) => {
               const LinkIcon = link.icon;
               return (
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="flex items-center gap-3 text-sm no-underline transition-all duration-300 px-3 py-2.5 rounded-xl -mx-3 group"
+                  className="flex items-center gap-2.5 text-[11px] no-underline transition-all duration-300 px-3 py-2 rounded-lg -mx-3 group"
                   style={{ fontFamily: 'var(--font-body)', color: 'var(--on-surface-variant)' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,193,106,0.04)'; e.currentTarget.style.color = 'var(--primary)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,193,106,0.03)'; e.currentTarget.style.color = 'var(--primary)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--on-surface-variant)'; }}
                 >
-                  <LinkIcon size={14} className="opacity-40 group-hover:opacity-100 transition-opacity" />
+                  <LinkIcon size={12} className="opacity-30 group-hover:opacity-100 transition-opacity" />
                   {link.label}
                 </Link>
               );
@@ -140,12 +140,12 @@ export default function Footer() {
           >
             Legal
           </h4>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             {governanceLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm no-underline transition-colors duration-300 py-1"
+                className="text-[11px] no-underline transition-colors duration-300 py-0.5"
                 style={{ fontFamily: 'var(--font-body)', color: 'var(--on-surface-variant)' }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--primary)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--on-surface-variant)'; }}
@@ -178,19 +178,19 @@ export default function Footer() {
             <input
               type="email"
               placeholder="you@city.gov"
-              className="input-field flex-1 text-xs"
-              style={{ height: '44px', padding: '8px 14px', borderRadius: '14px', fontFamily: 'var(--font-mono)' }}
+              className="input-field flex-1 text-[10px]"
+              style={{ height: '38px', padding: '6px 12px', borderRadius: '12px', fontFamily: 'var(--font-mono)' }}
             />
             <button
-              className="flex items-center justify-center rounded-[14px] transition-all duration-300"
+              className="flex items-center justify-center rounded-[12px] transition-all duration-300"
               style={{
                 background: 'var(--primary)',
                 color: 'white',
-                width: '44px',
-                height: '44px',
+                width: '38px',
+                height: '38px',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(0,109,57,0.25)',
+                boxShadow: '0 3px 12px rgba(0,109,57,0.2)',
               }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }}
